@@ -237,128 +237,84 @@
             </div>
         </section>
 
-        <!-- ================= VIEW: TEST PLAN ================= -->
-        <section id="view-testplan" class="view-card">
-            <header class="mb-8">
-                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Experimental Test Plan</h2>
-                <p class="text-slate-500">Review the three iterative trials and their corresponding video documentation.</p>
-            </header>
+<!-- ================= VIEW: TEST PLAN ================= -->
+<section id="view-testplan" class="view-card">
+    <header class="mb-8">
+        <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Experimental Test Plan</h2>
+        <p class="text-slate-500">Review the three iterative trials and their corresponding video documentation.</p>
+    </header>
 
-            <div class="grid lg:grid-cols-3 gap-6">
-                <!-- Trial 1 -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-                    <!-- 16:9 Video Container -->
-                    <div class="aspect-video bg-slate-900 relative group flex items-center justify-center text-center p-4">
-                        <div class="absolute inset-0 bg-slate-800 opacity-50 group-hover:opacity-30 transition-opacity"></div>
-                        <div class="relative z-10 text-white">
-                            <span class="text-4xl block mb-2 opacity-80">&#9654;</span>
-                            <span class="text-xs font-mono bg-black/50 px-2 py-1 rounded">Drive_Video_T1.mp4</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-bold text-lg text-slate-900">Trial 1: Baseline</h3>
-                            <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded font-semibold">972 J</span>
-                        </div>
-                        <p class="text-slate-500 text-sm mb-4 leading-relaxed">Initial setup. One module suffered thermal overload damage due to direct heat, limiting performance.</p>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm">
-                            <span class="text-slate-400">Voltage: 1.8V</span>
-                            <span class="text-slate-400">Power: 3.24W</span>
-                        </div>
-                    </div>
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Trial 1 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+            <!-- Embedded Video -->
+            <div class="aspect-video bg-slate-900 relative">
+                <iframe src="https://drive.google.com/file/d/1T1ql4ZKUIe5thC7HfNTUN8780XtS1dr5/preview" class="w-full h-full border-0 absolute inset-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 class="font-bold text-lg text-slate-900">Trial 1: Baseline</h3>
+                    <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded font-semibold">972 J</span>
                 </div>
-
-                <!-- Trial 2 -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-                    <div class="aspect-video bg-slate-900 relative group flex items-center justify-center text-center p-4">
-                        <div class="absolute inset-0 bg-slate-800 opacity-50 group-hover:opacity-30 transition-opacity"></div>
-                        <div class="relative z-10 text-white">
-                            <span class="text-4xl block mb-2 opacity-80">&#9654;</span>
-                            <span class="text-xs font-mono bg-black/50 px-2 py-1 rounded">Drive_Video_T2.mp4</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-bold text-lg text-slate-900">Trial 2: Compound</h3>
-                            <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-xs px-2 py-1 rounded font-semibold">1200 J</span>
-                        </div>
-                        <p class="text-slate-500 text-sm mb-4 leading-relaxed">Thermal compound added to improve heat transfer. Prevented further module damage and increased output.</p>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm">
-                            <span class="text-slate-400">Voltage: 2.0V</span>
-                            <span class="text-slate-400">Power: 4.0W</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trial 3 -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow ring-1 ring-emerald-500">
-                    <div class="aspect-video bg-slate-900 relative group flex items-center justify-center text-center p-4">
-                        <div class="absolute inset-0 bg-slate-800 opacity-50 group-hover:opacity-30 transition-opacity"></div>
-                        <div class="relative z-10 text-white">
-                            <span class="text-4xl block mb-2 opacity-80 text-emerald-400">&#9654;</span>
-                            <span class="text-xs font-mono bg-black/50 px-2 py-1 rounded text-emerald-200">Drive_Video_Final.mp4</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-bold text-lg text-slate-900">Trial 3: Final Config</h3>
-                            <span class="bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs px-2 py-1 rounded font-bold">2700 J</span>
-                        </div>
-                        <p class="text-slate-500 text-sm mb-4 leading-relaxed">Ice and salt introduced to the cooling side, dropping temp to 0&deg;C. Maximum thermal gradient achieved.</p>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm font-medium">
-                            <span class="text-emerald-600">Voltage: 3.0V</span>
-                            <span class="text-emerald-600">Power: 9.0W</span>
-                        </div>
-                    </div>
+                <!-- External Link -->
+                <a href="https://drive.google.com/file/d/1T1ql4ZKUIe5thC7HfNTUN8780XtS1dr5/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:text-blue-800 hover:underline mb-3 inline-block font-mono">
+                    &#8599; Open Drive_Video_T1.mp4
+                </a>
+                <p class="text-slate-500 text-sm mb-4 leading-relaxed">Initial setup. One module suffered thermal overload damage due to direct heat, limiting performance.</p>
+                <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm">
+                    <span class="text-slate-400">Voltage: 1.8V</span>
+                    <span class="text-slate-400">Power: 3.24W</span>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- ================= VIEW: PERFORMANCE ================= -->
-        <section id="view-performance" class="view-card">
-            <header class="mb-8">
-                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Performance Metrics</h2>
-                <p class="text-slate-500">Interactive data visualization showing the exponential growth across prototype iterations.</p>
-            </header>
-
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
-                
-                <!-- Custom Dashboard Controls -->
-                <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-slate-100" id="chart-controls">
-                    <button class="chart-toggle-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md shadow-indigo-200" data-metric="energy">
-                        Total Energy (J)
-                    </button>
-                    <button class="chart-toggle-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200" data-metric="power">
-                        Power (W)
-                    </button>
-                    <button class="chart-toggle-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200" data-metric="voltage">
-                        Voltage (V)
-                    </button>
-                    <button class="chart-toggle-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200" data-metric="efficiency">
-                        Efficiency (%)
-                    </button>
-                </div>
-
-                <!-- Chart Container (Strict positioning for responsive Chart.js) -->
-                <div class="w-full relative bg-slate-50/50 rounded-xl p-4">
-                    <div class="premium-chart-container">
-                        <canvas id="performanceCanvas"></canvas>
-                    </div>
-                </div>
-                
-                <!-- Dynamic Insight Box -->
-                <div class="mt-6 bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex gap-4 items-start">
-                    <div class="text-indigo-500 text-xl mt-1">&#128161;</div>
-                    <div>
-                        <h4 class="text-sm font-bold text-indigo-900 mb-1">Data Insight</h4>
-                        <p id="chart-insight-text" class="text-sm text-indigo-700 leading-relaxed">
-                            Total energy generated over a 300-second period. The project exceeded the minimum requirement of 150J, achieving an 18x output increase in the final trial.
-                        </p>
-                    </div>
-                </div>
-
+        <!-- Trial 2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+            <!-- Embedded Video -->
+            <div class="aspect-video bg-slate-900 relative">
+                <iframe src="https://drive.google.com/file/d/1DiP-TH2sAgY3LjtBuY65tcIbuvjcckI2/preview" class="w-full h-full border-0 absolute inset-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
-        </section>
+            <div class="p-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 class="font-bold text-lg text-slate-900">Trial 2: Compound</h3>
+                    <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-xs px-2 py-1 rounded font-semibold">1200 J</span>
+                </div>
+                <!-- External Link -->
+                <a href="https://drive.google.com/file/d/1DiP-TH2sAgY3LjtBuY65tcIbuvjcckI2/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:text-blue-800 hover:underline mb-3 inline-block font-mono">
+                    &#8599; Open Drive_Video_T2.mp4
+                </a>
+                <p class="text-slate-500 text-sm mb-4 leading-relaxed">Thermal compound added to improve heat transfer. Prevented further module damage and increased output.</p>
+                <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm">
+                    <span class="text-slate-400">Voltage: 2.0V</span>
+                    <span class="text-slate-400">Power: 4.0W</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trial 3 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow ring-1 ring-emerald-500">
+            <!-- Embedded Video -->
+            <div class="aspect-video bg-slate-900 relative">
+                <iframe src="https://drive.google.com/file/d/1AroqgURIIpGIaW87Fm2lb_QXBZPnrRUg/preview" class="w-full h-full border-0 absolute inset-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 class="font-bold text-lg text-slate-900">Trial 3: Final Config</h3>
+                    <span class="bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs px-2 py-1 rounded font-bold">2700 J</span>
+                </div>
+                <!-- External Link -->
+                <a href="https://drive.google.com/file/d/1AroqgURIIpGIaW87Fm2lb_QXBZPnrRUg/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-xs text-emerald-600 hover:text-emerald-800 hover:underline mb-3 inline-block font-mono">
+                    &#8599; Open Drive_Video_Final.mp4
+                </a>
+                <p class="text-slate-500 text-sm mb-4 leading-relaxed">Ice and salt introduced to the cooling side, dropping temp to 0&deg;C. Maximum thermal gradient achieved.</p>
+                <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm font-medium">
+                    <span class="text-emerald-600">Voltage: 3.0V</span>
+                    <span class="text-emerald-600">Power: 9.0W</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
         <!-- ================= VIEW: ANALYSIS ================= -->
         <section id="view-analysis" class="view-card">
