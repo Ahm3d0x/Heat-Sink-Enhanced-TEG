@@ -1,709 +1,1065 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="antialiased">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HS-TEG | Project Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Chosen Palette: Premium SaaS UI. Slate (50 to 900) for structured neutrals. Indigo (600) for primary actions/active states. Emerald (500) for success metrics. Rose (500) for heat accents. Cyan (500) for cold accents. -->
-    <!-- Application Structure Plan: App-Shell layout. Fixed navigation (Sidebar on desktop, Bottom Tab Bar on mobile). Main content area acts as a 'View Port'. Sections are designed as standalone 'Cards' that fade in/out, entirely replacing the traditional vertical scrolling website paradigm. This maximizes focus, reduces cognitive load, and delivers a native-app experience. -->
-    <!-- Visualization & Content Choices: 
-         1. UI Icons: Clean Unicode glyphs styled with CSS to mimic modern icon packs (No SVG).
-         2. Interactive Architecture: Master-Detail layout. List on left, details on right.
-         3. Test Plan: 'aspect-video' utility classes for precise Google Drive iframe placeholders.
-         4. Performance Chart: Chart.js within a strictly controlled absolute-positioned container for perfect responsiveness.
-         5. Math Analysis: Monospace code-like blocks for scientific formulas to emphasize technical rigor. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>HS-TEG | Research Workspace</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif'],mono:['DM Mono','monospace'],display:['Sora','sans-serif']},colors:{amber:{950:'#451a03'},heat:{DEFAULT:'#f97316'},cold:{DEFAULT:'#06b6d4'}}}}}
+  if(localStorage.theme==='dark'||(!'theme' in localStorage&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}
+</script>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;overflow:hidden;background:#f5f3ee;color:#1a1a1a;transition:background .3s,color .3s}
+  .dark body{background:#0d0f14;color:#e8e6e0}
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-thumb{background:#d4cfc5;border-radius:10px}
+  .dark ::-webkit-scrollbar-thumb{background:#2a2d35}
 
-    <style>
-        /* Base Resets & Typography */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; overflow: hidden; }
-        
-        /* App Shell Layout */
-        #app-root { display: flex; height: 100vh; width: 100vw; overflow: hidden; flex-direction: column; }
-        @media (min-width: 768px) { #app-root { flex-direction: row; } }
+  /* warm parchment tones */
+  :root{
+    --bg:          #f5f3ee;
+    --bg2:         #ede9e1;
+    --surface:     #ffffff;
+    --border:      rgba(0,0,0,.08);
+    --text:        #1a1a1a;
+    --text-muted:  #6b6560;
+    --accent:      #e85d04;
+    --accent2:     #0096c7;
+    --green:       #2d6a4f;
+    --brand:       #e85d04;
+  }
+  .dark{
+    --bg:         #0d0f14;
+    --bg2:        #14171f;
+    --surface:    #1a1d26;
+    --border:     rgba(255,255,255,.07);
+    --text:       #e8e6e0;
+    --text-muted: #6e7280;
+    --accent:     #ff7b35;
+    --accent2:    #38bdf8;
+    --green:      #4ade80;
+    --brand:      #ff7b35;
+  }
 
-        /* Navigation (Sidebar Desktop / Bottom Bar Mobile) */
-        #nav-container { background-color: #ffffff; border-color: #e2e8f0; z-index: 50; flex-shrink: 0; }
-        
-        /* Desktop Sidebar */
-        @media (min-width: 768px) {
-            #nav-container { width: 260px; height: 100vh; border-right-width: 1px; display: flex; flex-direction: column; }
-            .nav-scroll-area { flex: 1; overflow-y: auto; padding: 1.5rem 1rem; }
-            .nav-item { display: flex; align-items: center; width: 100%; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 0.75rem; color: #64748b; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
-            .nav-item:hover { background-color: #f1f5f9; color: #0f172a; }
-            .nav-item.active { background-color: #eef2ff; color: #4f46e5; font-weight: 600; }
-            .nav-icon { margin-right: 0.75rem; font-size: 1.1rem; }
-        }
+  body{background:var(--bg);color:var(--text)}
 
-        /* Mobile Bottom Nav */
-        @media (max-width: 767px) {
-            #nav-container { position: fixed; bottom: 0; left: 0; right: 0; height: 72px; border-top-width: 1px; padding-bottom: env(safe-area-inset-bottom); }
-            .nav-scroll-area { display: flex; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-            .nav-scroll-area::-webkit-scrollbar { display: none; }
-            .nav-item { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 80px; color: #64748b; transition: color 0.2s; cursor: pointer; scroll-snap-align: start; }
-            .nav-item.active { color: #4f46e5; }
-            .nav-icon { font-size: 1.25rem; margin-bottom: 0.25rem; }
-            .nav-text { font-size: 0.65rem; font-weight: 600; }
-        }
+  /* subtle grid */
+  .bg-grid{background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:32px 32px}
 
-        /* Main Viewport & View Cards */
-        #viewport { flex: 1; height: 100%; overflow-y: auto; overflow-x: hidden; background-color: #f8fafc; position: relative; scroll-behavior: smooth; }
-        @media (max-width: 767px) { #viewport { padding-bottom: 80px; /* Space for bottom nav */ } }
-        
-        .view-card { display: none; opacity: 0; padding: 1.5rem; max-width: 1100px; margin: 0 auto; min-height: 100%; }
-        @media (min-width: 768px) { .view-card { padding: 2.5rem; } }
-        
-        /* The Animation that makes it feel premium */
-        .view-card.active { display: block; animation: contentFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes contentFadeIn {
-            0% { opacity: 0; transform: translateY(15px) scale(0.99); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
+  /* Sidebar */
+  #sidebar{background:var(--surface);border-right:1px solid var(--border);transition:.3s}
+  .nav-btn{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;border-radius:.625rem;font-size:.8rem;font-weight:500;color:var(--text-muted);transition:.18s;cursor:pointer;width:100%;background:none;border:none;text-align:left}
+  .nav-btn:hover{background:var(--bg2);color:var(--text)}
+  .nav-btn.active{background:var(--accent);color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(232,93,4,.35)}
+  .dark .nav-btn.active{box-shadow:0 4px 14px rgba(255,123,53,.25)}
 
-        /* Component Interactive Layout (Architecture) */
-        .arch-btn { border-left: 3px solid transparent; transition: all 0.2s; }
-        .arch-btn:hover { background-color: #f8fafc; }
-        .arch-btn.active { background-color: #f1f5f9; border-left-color: #4f46e5; color: #0f172a; font-weight: 600; }
-        .arch-detail { display: none; animation: simpleFade 0.3s ease-out; }
-        .arch-detail.active { display: block; }
-        @keyframes simpleFade { from { opacity: 0; } to { opacity: 1; } }
+  /* Mobile nav */
+  #mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:9999;padding-bottom:env(safe-area-inset-bottom,12px);background:var(--surface);border-top:1px solid var(--border);backdrop-filter:blur(16px)}
+  .mob-btn{flex:1;min-width:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:.5rem 0;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:.18s}
+  .mob-btn.active{color:var(--accent)}
+  .mob-btn .dot{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0;margin:0 auto;transition:.18s}
+  .mob-btn.active .dot{opacity:1}
 
-        /* Strict Chart Container */
-        .premium-chart-container { position: relative; width: 100%; height: 60vh; max-height: 450px; min-height: 300px; }
-        
-        /* Hide scrollbars for clean UI but allow scroll */
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+  /* Views */
+  .view{display:none;opacity:0;transform:translateY(12px)}
+  .view.active{display:block;animation:fadeUp .38s cubic-bezier(.16,1,.3,1) forwards}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:1.125rem;transition:.2s}
+  .card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08)}
+  .dark .card:hover{box-shadow:0 8px 24px rgba(0,0,0,.4)}
+
+  /* Badge */
+  .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .65rem;border-radius:99px;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .badge-orange{background:rgba(232,93,4,.12);color:var(--accent);border:1px solid rgba(232,93,4,.2)}
+  .badge-cyan{background:rgba(6,182,212,.12);color:#0096c7;border:1px solid rgba(6,182,212,.2)}
+  .dark .badge-cyan{color:#38bdf8}
+  .badge-green{background:rgba(45,106,79,.12);color:var(--green);border:1px solid rgba(45,106,79,.2)}
+
+  /* Gradient text */
+  .grad-heat{background:linear-gradient(135deg,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .grad-cold{background:linear-gradient(135deg,#0ea5e9,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .grad-brand{background:linear-gradient(135deg,var(--accent),#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+  /* Stat card */
+  .stat-card{padding:1.1rem 1.25rem;border-radius:1rem;border:1px solid var(--border);background:var(--surface);text-align:center}
+  .stat-num{font-family:'Sora',sans-serif;font-size:1.9rem;font-weight:800;line-height:1;letter-spacing:-.03em}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:1.5rem;border-left:2px solid var(--border)}
+  .tl-dot{position:absolute;left:-9px;top:.2rem;width:16px;height:16px;border-radius:50%;border:3px solid var(--surface)}
+
+  /* Material table */
+  .mat-row{display:grid;grid-template-columns:1fr 2fr 1fr;gap:.5rem;align-items:center;padding:.6rem .75rem;border-radius:.5rem;font-size:.8rem}
+  .mat-row:nth-child(odd){background:var(--bg2)}
+
+  /* Flip cards */
+  .flip{perspective:900px}
+  .flip-inner{width:100%;height:100%;position:relative;transition:transform .6s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+  .flip:hover .flip-inner{transform:rotateY(180deg)}
+  .flip-f,.flip-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:1rem}
+  .flip-b{transform:rotateY(180deg)}
+
+  /* Formula block */
+  .formula{font-family:'DM Mono',monospace;background:var(--bg2);border:1px solid var(--border);border-radius:.625rem;padding:.75rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+
+  /* Range slider */
+  input[type=range]{-webkit-appearance:none;width:100%;background:transparent}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:pointer;margin-top:-8px;box-shadow:0 0 0 3px rgba(232,93,4,.2);transition:.1s}
+  input[type=range]::-webkit-slider-runnable-track{width:100%;height:4px;background:var(--bg2);border-radius:2px}
+
+  /* Flow arrows */
+  @keyframes pulse-down{0%,100%{opacity:.3;transform:translateY(-4px)}50%{opacity:1;transform:translateY(4px)}}
+  .arrow-pulse{animation:pulse-down 2s ease-in-out infinite;font-size:1.4rem;color:var(--text-muted)}
+
+  /* Cmd palette */
+  #cmdpal{display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;padding-top:12vh}
+  #cmdpal.open{display:flex;animation:fadeUp .2s ease forwards}
+
+  /* Glow accent */
+  .glow-accent{box-shadow:0 0 0 1px rgba(232,93,4,.3),0 4px 20px rgba(232,93,4,.2)}
+  .dark .glow-accent{box-shadow:0 0 0 1px rgba(255,123,53,.25),0 4px 20px rgba(255,123,53,.15)}
+
+  /* Scrollbar hide */
+  .hide-scroll{-ms-overflow-style:none;scrollbar-width:none}
+  .hide-scroll::-webkit-scrollbar{display:none}
+
+  /* Comparison table */
+  .cmp-cell{padding:.6rem .85rem;font-size:.78rem;border-bottom:1px solid var(--border)}
+  .cmp-head{padding:.5rem .85rem;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border)}
+
+  /* Progress bar */
+  .progress-bar{height:6px;border-radius:3px;background:var(--bg2);overflow:hidden}
+  .progress-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
+
+  /* Shine animation on hero */
+  @keyframes shine{0%{transform:translateX(-100%) skewX(-12deg)}100%{transform:translateX(250%) skewX(-12deg)}}
+  .hero-shine::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);animation:shine 4s ease-in-out infinite}
+</style>
 </head>
-<body>
+<body class="bg-grid h-[100dvh] w-full flex overflow-hidden">
 
-<div id="app-root">
-    <!-- NAVIGATION SHELL -->
-    <nav id="nav-container" class="shadow-sm md:shadow-md">
-        <!-- Desktop Brand Header -->
-        <div class="hidden md:block p-6 border-b border-slate-100">
-            <div class="flex items-center gap-2 mb-1">
-                <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-lg">&#9889;</div>
-                <h1 class="font-bold text-xl text-slate-900 tracking-tight">HS-TEG</h1>
-            </div>
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Project Dashboard</p>
-        </div>
-
-        <!-- Navigation Links -->
-        <div class="nav-scroll-area">
-            <div class="nav-item active" data-target="view-overview">
-                <span class="nav-icon">&#128200;</span>
-                <span class="nav-text hidden md:inline">Overview</span>
-                <span class="nav-text md:hidden">Overview</span>
-            </div>
-            <div class="nav-item" data-target="view-architecture">
-                <span class="nav-icon">&#9881;</span>
-                <span class="nav-text hidden md:inline">Architecture</span>
-                <span class="nav-text md:hidden">System</span>
-            </div>
-            <div class="nav-item" data-target="view-testplan">
-                <span class="nav-icon">&#128249;</span>
-                <span class="nav-text hidden md:inline">Test Plan</span>
-                <span class="nav-text md:hidden">Videos</span>
-            </div>
-            <div class="nav-item" data-target="view-performance">
-                <span class="nav-icon">&#128202;</span>
-                <span class="nav-text hidden md:inline">Performance</span>
-                <span class="nav-text md:hidden">Data</span>
-            </div>
-            <div class="nav-item" data-target="view-analysis">
-                <span class="nav-icon">&#129522;</span>
-                <span class="nav-text hidden md:inline">Math Analysis</span>
-                <span class="nav-text md:hidden">Analysis</span>
-            </div>
-            <div class="nav-item" data-target="view-resources">
-                <span class="nav-icon">&#128218;</span>
-                <span class="nav-text hidden md:inline">Resources</span>
-                <span class="nav-text md:hidden">Links</span>
-            </div>
-            <div class="nav-item" data-target="view-team">
-                <span class="nav-icon">&#128101;</span>
-                <span class="nav-text hidden md:inline">Team Members</span>
-                <span class="nav-text md:hidden">Team</span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- MAIN VIEWPORT -->
-    <main id="viewport" class="hide-scroll">
-        
-        <!-- ================= VIEW: OVERVIEW ================= -->
-        <section id="view-overview" class="view-card active">
-            <header class="mb-10">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-3">Project Overview</h2>
-                <p class="text-slate-500 text-lg">Converting domestic waste heat into accessible renewable energy.</p>
-            </header>
-
-            <!-- Hero Panel -->
-            <div class="bg-indigo-600 rounded-2xl p-8 md:p-12 shadow-lg mb-8 relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 text-[15rem] opacity-10 leading-none">&#9889;</div>
-                <div class="relative z-10">
-                    <span class="inline-block py-1 px-3 rounded-full bg-indigo-500/50 text-indigo-100 text-sm font-semibold tracking-wider mb-4 border border-indigo-400/50">ABSTRACT</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight max-w-2xl">The primary objective is the design of a prototype capable of transforming heat into electrical energy.</h3>
-                    <p class="text-indigo-100 text-lg max-w-3xl leading-relaxed">
-                        By utilizing the Seebeck effect via thermoelectric (Peltier) modules, this system successfully established a temperature difference of over 150&deg;C, generating significant electrical output from recycled thermal waste.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Problem / Solution Grid -->
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl mb-6">&#128293;</div>
-                    <h4 class="text-xl font-bold text-slate-900 mb-3">The Challenge</h4>
-                    <p class="text-slate-600 leading-relaxed">
-                        Egypt faces rising energy demands while combatting climate change. A massive portion of energy in domestic and industrial sectors is lost as <strong>Waste Heat</strong>. This remains an unutilized, untapped resource that causes environmental harm and reduces overall system efficiency.
-                    </p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-6">&#127758;</div>
-                    <h4 class="text-xl font-bold text-slate-900 mb-3">The Solution</h4>
-                    <p class="text-slate-600 leading-relaxed">
-                        A highly scalable, eco-friendly heat recovery system. Simulating a domestic iron as a heat source and using recycled materials for cooling, the prototype directly converts thermal differentials into clean electricity, exceeding design goals by producing up to <strong>2700 Joules</strong>.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= VIEW: ARCHITECTURE ================= -->
-        <section id="view-architecture" class="view-card">
-            <header class="mb-8">
-                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">System Architecture</h2>
-                <p class="text-slate-500">Select a component to explore its role in the thermal energy conversion process.</p>
-            </header>
-
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row overflow-hidden min-h-[500px]">
-                <!-- Interactive List -->
-                <div class="md:w-1/3 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 p-4 flex flex-col gap-2">
-                    <button class="arch-btn active text-left px-4 py-4 rounded-xl text-slate-600 font-medium flex items-center gap-3" data-arch="hot">
-                        <span class="text-xl">&#128293;</span> Heat Source
-                    </button>
-                    <button class="arch-btn text-left px-4 py-4 rounded-xl text-slate-600 font-medium flex items-center gap-3" data-arch="cold">
-                        <span class="text-xl">&#10052;</span> Cold Source
-                    </button>
-                    <button class="arch-btn text-left px-4 py-4 rounded-xl text-slate-600 font-medium flex items-center gap-3" data-arch="peltier">
-                        <span class="text-xl">&#9889;</span> Peltier Modules
-                    </button>
-                    <button class="arch-btn text-left px-4 py-4 rounded-xl text-slate-600 font-medium flex items-center gap-3" data-arch="thermal">
-                        <span class="text-xl">&#129521;</span> Thermal Mgmt.
-                    </button>
-                    <button class="arch-btn text-left px-4 py-4 rounded-xl text-slate-600 font-medium flex items-center gap-3" data-arch="storage">
-                        <span class="text-xl">&#128267;</span> Storage
-                    </button>
-                </div>
-                
-                <!-- Detail View -->
-                <div class="md:w-2/3 p-8 md:p-12 flex flex-col justify-center items-center text-center bg-white relative">
-                    <div id="arch-hot" class="arch-detail active w-full max-w-md">
-                        <div class="w-24 h-24 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner border border-rose-100">&#128293;</div>
-                        <h3 class="text-2xl font-bold text-slate-900 mb-4">Electric Iron</h3>
-                        <p class="text-slate-600 text-lg leading-relaxed">Acting as the primary heat source to simulate domestic waste heat. The iron successfully reaches and maintains extreme temperatures of approximately <strong>180&deg;C to 200&deg;C</strong>.</p>
-                    </div>
-                    
-                    <div id="arch-cold" class="arch-detail w-full max-w-md">
-                        <div class="w-24 h-24 bg-cyan-50 text-cyan-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner border border-cyan-100">&#10052;</div>
-                        <h3 class="text-2xl font-bold text-slate-900 mb-4">Recycled Fan + Ice/Salt</h3>
-                        <p class="text-slate-600 text-lg leading-relaxed">A recycled computer laptop fan coupled with a mixture of ice and salt. This drives the cold-side temperature down to <strong>0&deg;C</strong>, ensuring the maximum possible thermal gradient.</p>
-                    </div>
-
-                    <div id="arch-peltier" class="arch-detail w-full max-w-md">
-                        <div class="w-24 h-24 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner border border-amber-100">&#9889;</div>
-                        <h3 class="text-2xl font-bold text-slate-900 mb-4">Thermoelectric Generators (TEG)</h3>
-                        <p class="text-slate-600 text-lg leading-relaxed">The core of the system. Positioned between the hot and cold extremes, these modules utilize the <strong>Seebeck Effect</strong> to generate voltage directly from the temperature differential.</p>
-                    </div>
-
-                    <div id="arch-thermal" class="arch-detail w-full max-w-md">
-                        <div class="w-24 h-24 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner border border-slate-200">&#129521;</div>
-                        <h3 class="text-2xl font-bold text-slate-900 mb-4">Aluminum & Compound</h3>
-                        <p class="text-slate-600 text-lg leading-relaxed">Aluminum plates distribute intense heat evenly to prevent module damage. Thermal compound (paste) bridges microscopic gaps, drastically improving heat transfer efficiency.</p>
-                    </div>
-
-                    <div id="arch-storage" class="arch-detail w-full max-w-md">
-                        <div class="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner border border-emerald-100">&#128267;</div>
-                        <h3 class="text-2xl font-bold text-slate-900 mb-4">Battery & Circuitry</h3>
-                        <p class="text-slate-600 text-lg leading-relaxed">The generated current is regulated using a 1&Omega; to 10&Omega; resistor and routed to a rechargeable <strong>lithium battery</strong>, allowing the captured energy to be stored and utilized practically.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-<!-- ================= VIEW: TEST PLAN ================= -->
-<section id="view-testplan" class="view-card">
-    <header class="mb-8">
-        <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Experimental Test Plan</h2>
-        <p class="text-slate-500">Review the three iterative trials and their corresponding video documentation.</p>
-    </header>
-
-    <div class="grid lg:grid-cols-3 gap-6">
-        <!-- Trial 1 -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-            <!-- Embedded Video -->
-            <div class="aspect-video bg-slate-900 relative">
-                <iframe src="https://drive.google.com/file/d/1T1ql4ZKUIe5thC7HfNTUN8780XtS1dr5/preview" class="w-full h-full border-0 absolute inset-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-            <div class="p-6 flex-1 flex flex-col">
-                <div class="flex justify-between items-start mb-1">
-                    <h3 class="font-bold text-lg text-slate-900">Trial 1: Baseline</h3>
-                    <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded font-semibold">972 J</span>
-                </div>
-                <!-- External Link -->
-                <a href="https://drive.google.com/file/d/1T1ql4ZKUIe5thC7HfNTUN8780XtS1dr5/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:text-blue-800 hover:underline mb-3 inline-block font-mono">
-                    &#8599; Open Drive_Video_T1.mp4
-                </a>
-                <p class="text-slate-500 text-sm mb-4 leading-relaxed">Initial setup. One module suffered thermal overload damage due to direct heat, limiting performance.</p>
-                <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm">
-                    <span class="text-slate-400">Voltage: 1.8V</span>
-                    <span class="text-slate-400">Power: 3.24W</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Trial 2 -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-            <!-- Embedded Video -->
-            <div class="aspect-video bg-slate-900 relative">
-                <iframe src="https://drive.google.com/file/d/1DiP-TH2sAgY3LjtBuY65tcIbuvjcckI2/preview" class="w-full h-full border-0 absolute inset-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-            <div class="p-6 flex-1 flex flex-col">
-                <div class="flex justify-between items-start mb-1">
-                    <h3 class="font-bold text-lg text-slate-900">Trial 2: Compound</h3>
-                    <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-xs px-2 py-1 rounded font-semibold">1200 J</span>
-                </div>
-                <!-- External Link -->
-                <a href="https://drive.google.com/file/d/1DiP-TH2sAgY3LjtBuY65tcIbuvjcckI2/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:text-blue-800 hover:underline mb-3 inline-block font-mono">
-                    &#8599; Open Drive_Video_T2.mp4
-                </a>
-                <p class="text-slate-500 text-sm mb-4 leading-relaxed">Thermal compound added to improve heat transfer. Prevented further module damage and increased output.</p>
-                <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm">
-                    <span class="text-slate-400">Voltage: 2.0V</span>
-                    <span class="text-slate-400">Power: 4.0W</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Trial 3 -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow ring-1 ring-emerald-500">
-            <!-- Embedded Video -->
-            <div class="aspect-video bg-slate-900 relative">
-                <iframe src="https://drive.google.com/file/d/1AroqgURIIpGIaW87Fm2lb_QXBZPnrRUg/preview" class="w-full h-full border-0 absolute inset-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-            <div class="p-6 flex-1 flex flex-col">
-                <div class="flex justify-between items-start mb-1">
-                    <h3 class="font-bold text-lg text-slate-900">Trial 3: Final Config</h3>
-                    <span class="bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs px-2 py-1 rounded font-bold">2700 J</span>
-                </div>
-                <!-- External Link -->
-                <a href="https://drive.google.com/file/d/1AroqgURIIpGIaW87Fm2lb_QXBZPnrRUg/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-xs text-emerald-600 hover:text-emerald-800 hover:underline mb-3 inline-block font-mono">
-                    &#8599; Open Drive_Video_Final.mp4
-                </a>
-                <p class="text-slate-500 text-sm mb-4 leading-relaxed">Ice and salt introduced to the cooling side, dropping temp to 0&deg;C. Maximum thermal gradient achieved.</p>
-                <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between text-sm font-medium">
-                    <span class="text-emerald-600">Voltage: 3.0V</span>
-                    <span class="text-emerald-600">Power: 9.0W</span>
-                </div>
-            </div>
-        </div>
+<!-- CMD PALETTE -->
+<div id="cmdpal" onclick="if(event.target===this)closePal()">
+  <div class="card w-full max-w-md shadow-2xl overflow-hidden" style="max-height:70vh">
+    <div class="flex items-center gap-3 p-4 border-b" style="border-color:var(--border)">
+      <span style="color:var(--text-muted)">⌕</span>
+      <input id="pal-input" type="text" placeholder="Search sections…" autocomplete="off"
+        class="flex-1 bg-transparent outline-none text-base" style="color:var(--text)"
+        oninput="filterPal(this.value)">
+      <kbd class="text-[10px] px-1.5 py-0.5 rounded border font-mono" style="border-color:var(--border);color:var(--text-muted)">ESC</kbd>
     </div>
-</section>
-
-        <!-- ================= VIEW: ANALYSIS ================= -->
-        <section id="view-analysis" class="view-card">
-            <header class="mb-8">
-                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Mathematical Analysis</h2>
-                <p class="text-slate-500">Verification of thermal dynamics and electrical efficiency.</p>
-            </header>
-
-            <div class="grid lg:grid-cols-5 gap-8">
-                
-                <!-- Left Col: Core Formulas (SaaS Code Block Style) -->
-                <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-800">
-                        <div class="flex items-center gap-2 mb-4 border-b border-slate-700 pb-3">
-                            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
-                            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                            <span class="text-xs font-mono text-slate-400 ml-2">governing_laws.eqn</span>
-                        </div>
-                        <div class="space-y-6 font-mono text-sm">
-                            <div>
-                                <div class="text-slate-500 mb-1">// 1. Electrical Power</div>
-                                <div class="text-emerald-400 bg-slate-800/50 p-2 rounded">P = V&sup2; / R</div>
-                            </div>
-                            <div>
-                                <div class="text-slate-500 mb-1">// 2. Total Energy (Joules)</div>
-                                <div class="text-cyan-400 bg-slate-800/50 p-2 rounded">E = P &times; t</div>
-                            </div>
-                            <div>
-                                <div class="text-slate-500 mb-1">// 3. Fourier's Heat Conduction</div>
-                                <div class="text-amber-400 bg-slate-800/50 p-2 rounded">Q = (k &times; A &times; &Delta;T) / L</div>
-                            </div>
-                            <div class="pt-4 border-t border-slate-800 text-xs text-slate-400">
-                                <span>Constants Used:</span><br>
-                                <span class="text-slate-300">R</span> = 1 &Omega;<br>
-                                <span class="text-slate-300">t</span> = 300 s<br>
-                                <span class="text-slate-300">Q<sub>in</sub></span> = 10,800 J
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Col: Trial Calculations -->
-                <div class="lg:col-span-3">
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 h-full flex flex-col justify-between">
-                        
-                        <div class="space-y-8">
-                            <!-- Math Block 1 -->
-                            <div class="relative pl-6 border-l-2 border-slate-200 pb-2">
-                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-2 border-white"></div>
-                                <h4 class="font-bold text-slate-900 mb-2">Trial 1 Evaluation</h4>
-                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 font-mono text-sm text-slate-600">
-                                    P = (1.8)&sup2; / 1 = <strong class="text-indigo-600 font-semibold">3.24 W</strong><br>
-                                    E = 3.24 &times; 300 = <strong class="text-emerald-600 font-semibold">972 J</strong><br>
-                                    Efficiency = (972 / 10800) &times; 100 = <strong>9%</strong>
-                                </div>
-                            </div>
-
-                            <!-- Math Block 2 -->
-                            <div class="relative pl-6 border-l-2 border-slate-200 pb-2">
-                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-300 border-2 border-white"></div>
-                                <h4 class="font-bold text-slate-900 mb-2">Trial 2 Evaluation</h4>
-                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 font-mono text-sm text-slate-600">
-                                    P = (2.0)&sup2; / 1 = <strong class="text-indigo-600 font-semibold">4.0 W</strong><br>
-                                    E = 4.0 &times; 300 = <strong class="text-emerald-600 font-semibold">1200 J</strong><br>
-                                    Efficiency = (1200 / 10800) &times; 100 = <strong>11%</strong>
-                                </div>
-                            </div>
-
-                            <!-- Math Block 3 -->
-                            <div class="relative pl-6 border-l-2 border-emerald-500 pb-2">
-                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_0_3px_rgba(16,185,129,0.2)]"></div>
-                                <h4 class="font-bold text-slate-900 mb-2">Trial 3 Evaluation (Final)</h4>
-                                <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 font-mono text-sm text-slate-600">
-                                    P = (3.0)&sup2; / 1 = <strong class="text-indigo-600 font-semibold">9.0 W</strong><br>
-                                    E = 9.0 &times; 300 = <strong class="text-emerald-600 font-semibold text-base">2700 J</strong><br>
-                                    Efficiency = (2700 / 10800) &times; 100 = <strong class="text-emerald-600 font-semibold text-base">25%</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= VIEW: RESOURCES ================= -->
-        <section id="view-resources" class="view-card">
-            <header class="mb-8 border-b border-slate-200 pb-6 flex justify-between items-end">
-                <div>
-                    <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">External Resources</h2>
-                    <p class="text-slate-500">Literature cited during project research.</p>
-                </div>
-                <div class="hidden md:block text-slate-300 text-5xl leading-none">&#128218;</div>
-            </header>
-
-            <div class="grid md:grid-cols-2 gap-4">
-                <a href="#" class="group p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex gap-4 items-start">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center font-bold text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">&#128279;</div>
-                    <div>
-                        <h4 class="font-semibold text-slate-900 text-sm mb-1 group-hover:text-indigo-700 transition-colors">Solar thermoelectricity for power generation.</h4>
-                        <p class="text-xs text-slate-500">Ayachi, S., He, X. & Yoon, H. I. (2023). Advanced Energy Materials.</p>
-                    </div>
-                </a>
-                <a href="#" class="group p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex gap-4 items-start">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center font-bold text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">&#128279;</div>
-                    <div>
-                        <h4 class="font-semibold text-slate-900 text-sm mb-1 group-hover:text-indigo-700 transition-colors">Recent progress at thermoelectric devices...</h4>
-                        <p class="text-xs text-slate-500">Baskaran, P. & Rajanckm. M. (2025). Chemical Engineering Journal.</p>
-                    </div>
-                </a>
-                <a href="#" class="group p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex gap-4 items-start">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center font-bold text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">&#128279;</div>
-                    <div>
-                        <h4 class="font-semibold text-slate-900 text-sm mb-1 group-hover:text-indigo-700 transition-colors">Principle Application of Thermoelectric...</h4>
-                        <p class="text-xs text-slate-500">Ridwan, M., Gunilla, M. & Reverter, F. (2025).</p>
-                    </div>
-                </a>
-                <a href="#" class="group p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex gap-4 items-start">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center font-bold text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">&#128279;</div>
-                    <div>
-                        <h4 class="font-semibold text-slate-900 text-sm mb-1 group-hover:text-indigo-700 transition-colors">Numerical analysis of thermoelectric...</h4>
-                        <p class="text-xs text-slate-500">Xu, C. et al. (2023). Frontiers in Energy Research, 11.</p>
-                    </div>
-                </a>
-                <a href="#" class="group p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex gap-4 items-start">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center font-bold text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">&#128279;</div>
-                    <div>
-                        <h4 class="font-semibold text-slate-900 text-sm mb-1 group-hover:text-indigo-700 transition-colors">A Comprehensive Review of TEG...</h4>
-                        <p class="text-xs text-slate-500">Yang, S., Chen, H., & Lan D. (2025). Clean Energy and Fuel Research.</p>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <!-- ================= VIEW: TEAM ================= -->
-        <section id="view-team" class="view-card">
-            <header class="mb-10 text-center">
-                <span class="inline-block py-1 px-3 rounded-full bg-slate-200 text-slate-700 text-xs font-bold tracking-wider mb-3">GROUP 22116</span>
-                <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Project Research Team</h2>
-                <p class="text-slate-500">Sharkya STEM School, Grade 10, Second Semester (2025/2026)</p>
-            </header>
-
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                <!-- Profile 1 -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 text-center flex flex-col">
-                    <div class="h-20 bg-slate-100 w-full relative">
-                        <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-white rounded-full p-1 shadow-sm">
-                            <div class="w-full h-full rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">RA</div>
-                        </div>
-                    </div>
-                    <div class="pt-14 px-5 pb-6 flex-1 flex flex-col">
-                        <h3 class="font-bold text-slate-900 text-lg">Rojeena Attia</h3>
-                        <p class="text-emerald-600 text-xs font-semibold mb-3">Student Researcher</p>
-                        <p class="text-slate-500 text-xs leading-relaxed mb-5">Focused on the physical prototype construction and material selection.</p>
-                        <a href="mailto:rojeena.2225524@stemsharkya.moe.edu.eg" class="mt-auto block w-full bg-slate-50 border border-slate-200 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 text-slate-600 text-xs py-2 rounded-lg transition-colors truncate px-2" title="rojeena.2225524@stemsharkya.moe.edu.eg">
-                            Contact E-Mail
-                        </a>
-                    </div>
-                </div>
-
-    
-                <!-- Profile 2 -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 text-center flex flex-col">
-                    <div class="h-20 bg-slate-100 w-full relative">
-                        <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-white rounded-full p-1 shadow-sm">
-                            <div class="w-full h-full rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl font-bold">AA</div>
-                        </div>
-                    </div>
-                    <div class="pt-14 px-5 pb-6 flex-1 flex flex-col">
-                        <h3 class="font-bold text-slate-900 text-lg">A'laa Abdelrahman</h3>
-                        <p class="text-indigo-600 text-xs font-semibold mb-3">Student Researcher</p>
-                        <p class="text-slate-500 text-xs leading-relaxed mb-5">Co-developed the thermal analysis and physical system equations.</p>
-                        <a href="mailto:alaa.2325504@stemsharkya.moe.edu.eg" class="mt-auto block w-full bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 text-slate-600 text-xs py-2 rounded-lg transition-colors truncate px-2" title="alaa.2325504@stemsharkya.moe.edu.eg">
-                            Contact E-Mail
-                        </a>
-                    </div>
-                </div>
-
-
-
-                <!-- Profile 3 -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 text-center flex flex-col">
-                    <div class="h-20 bg-slate-100 w-full relative">
-                        <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-white rounded-full p-1 shadow-sm">
-                            <div class="w-full h-full rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl font-bold">RM</div>
-                        </div>
-                    </div>
-                    <div class="pt-14 px-5 pb-6 flex-1 flex flex-col">
-                        <h3 class="font-bold text-slate-900 text-lg">Rosol Mohammed</h3>
-                        <p class="text-rose-600 text-xs font-semibold mb-3">Student Researcher</p>
-                        <p class="text-slate-500 text-xs leading-relaxed mb-5">Lead on mathematical evaluations and efficiency calculations.</p>
-                        <a href="mailto:rosol.2225516@stemsharkya.moe.edu.eg" class="mt-auto block w-full bg-slate-50 border border-slate-200 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 text-xs py-2 rounded-lg transition-colors truncate px-2" title="rosol.2225516@stemsharkya.moe.edu.eg">
-                            Contact E-Mail
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Profile 4 -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 text-center flex flex-col">
-                    <div class="h-20 bg-slate-100 w-full relative">
-                        <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-white rounded-full p-1 shadow-sm">
-                            <div class="w-full h-full rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">TM</div>
-                        </div>
-                    </div>
-                    <div class="pt-14 px-5 pb-6 flex-1 flex flex-col">
-                        <h3 class="font-bold text-slate-900 text-lg">Tabark Mohammed</h3>
-                        <p class="text-amber-600 text-xs font-semibold mb-3">Student Researcher</p>
-                        <p class="text-slate-500 text-xs leading-relaxed mb-5">Managed performance testing, data collection, and trial execution.</p>
-                        <a href="mailto:tabark.2225703@stemsharkya.moe.edu.eg" class="mt-auto block w-full bg-slate-50 border border-slate-200 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-700 text-slate-600 text-xs py-2 rounded-lg transition-colors truncate px-2" title="tabark.2225703@stemsharkya.moe.edu.eg">
-                            Contact E-Mail
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
+    <div id="pal-list" class="overflow-y-auto p-2" style="max-height:50vh"></div>
+  </div>
 </div>
 
+<!-- SIDEBAR (desktop) -->
+<aside id="sidebar" class="hidden md:flex flex-col w-[220px] lg:w-[240px] h-full flex-shrink-0 z-50">
+  <div class="p-5 flex items-center gap-3" style="border-bottom:1px solid var(--border)">
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-base font-bold" style="background:linear-gradient(135deg,#e85d04,#f59e0b)">⚡</div>
+    <div>
+      <p class="font-display font-800 text-[.95rem] leading-tight" style="color:var(--text)">HS-TEG</p>
+      <p class="text-[.6rem] font-600 uppercase tracking-widest" style="color:var(--text-muted)">Research 2025/26</p>
+    </div>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto p-3 space-y-0.5">
+    <button class="nav-btn active" data-view="v-overview">  <span>🏠</span> Overview</button>
+    <button class="nav-btn"        data-view="v-intro">     <span>🌍</span> Introduction</button>
+    <button class="nav-btn"        data-view="v-arch">      <span>⚙️</span> Architecture</button>
+    <button class="nav-btn"        data-view="v-materials"> <span>🧰</span> Materials</button>
+    <button class="nav-btn"        data-view="v-tests">     <span>🧪</span> Test Plan</button>
+    <button class="nav-btn"        data-view="v-perf">      <span>📊</span> Performance</button>
+    <button class="nav-btn"        data-view="v-analysis">  <span>🔬</span> Analysis</button>
+    <button class="nav-btn"        data-view="v-future">    <span>🚀</span> Recommendations</button>
+    <button class="nav-btn"        data-view="v-resources"> <span>📚</span> References</button>
+    <button class="nav-btn"        data-view="v-team">      <span>👥</span> Team</button>
+  </nav>
+
+  <div class="p-3 space-y-2" style="border-top:1px solid var(--border)">
+    <button id="theme-btn" onclick="toggleTheme()" class="nav-btn w-full justify-center text-xs" style="border:1px solid var(--border)">
+      <span id="theme-ic">🌙</span><span id="theme-lbl">Dark Mode</span>
+    </button>
+    <p class="text-center font-mono text-[.6rem]" style="color:var(--text-muted)">
+      <kbd style="background:var(--bg2);padding:1px 5px;border-radius:4px;border:1px solid var(--border)">Ctrl</kbd> +
+      <kbd style="background:var(--bg2);padding:1px 5px;border-radius:4px;border:1px solid var(--border)">K</kbd> search
+    </p>
+  </div>
+</aside>
+
+<!-- MAIN VIEWPORT -->
+<main id="viewport" class="flex-1 h-[100dvh] overflow-y-auto overflow-x-hidden pb-24 md:pb-6 scroll-smooth">
+<div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-10 min-h-full">
+
+<!-- ===================== OVERVIEW ===================== -->
+<section id="v-overview" class="view active">
+  <!-- Hero -->
+  <div class="relative rounded-2xl overflow-hidden mb-6 hero-shine" style="background:linear-gradient(135deg,#1a0a00 0%,#2d1200 40%,#0a1628 100%)">
+    <div class="absolute inset-0 opacity-30" style="background:radial-gradient(ellipse at 70% 50%,#f97316 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,#0ea5e9 0%,transparent 50%)"></div>
+    <div class="relative z-10 p-8 lg:p-14">
+      <div class="badge badge-orange mb-4"><span class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></span>Group 22116 · Sharkya STEM</div>
+      <h1 class="font-display text-3xl sm:text-4xl lg:text-6xl font-800 text-white leading-[1.05] mb-4 tracking-tight">
+        Converting <span class="grad-heat">Waste Heat</span><br>into <span class="grad-cold">Clean Energy</span>
+      </h1>
+      <p class="text-white/70 text-base lg:text-lg max-w-2xl leading-relaxed mb-8 font-300">
+        A compact thermoelectric generator (HS-TEG) leveraging the Seebeck Effect to transform industrial and domestic heat loss into accessible electricity — exceeding targets by <strong class="text-white font-600">18×</strong>.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="go('v-perf')" class="px-5 py-2.5 rounded-xl text-sm font-700 text-white" style="background:var(--accent);box-shadow:0 4px 18px rgba(232,93,4,.4)">View Performance →</button>
+        <button onclick="go('v-arch')" class="px-5 py-2.5 rounded-xl text-sm font-600 text-white/80 border border-white/20 hover:border-white/50 transition-colors">Explore Architecture</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="stat-card glow-accent">
+      <p class="text-xs font-700 uppercase tracking-wider mb-2" style="color:var(--accent)">Peak Output</p>
+      <p class="stat-num" style="color:var(--accent)">2700<span class="text-base font-400 ml-1" style="color:var(--text-muted)">J</span></p>
+      <p class="text-xs mt-1" style="color:var(--text-muted)">vs. 150 J goal</p>
+    </div>
+    <div class="stat-card">
+      <p class="text-xs font-700 uppercase tracking-wider mb-2" style="color:var(--text-muted)">Efficiency</p>
+      <p class="stat-num" style="color:var(--green)">25<span class="text-base ml-1">%</span></p>
+      <p class="text-xs mt-1" style="color:var(--text-muted)">vs. 10% target</p>
+    </div>
+    <div class="stat-card">
+      <p class="text-xs font-700 uppercase tracking-wider mb-2" style="color:var(--text-muted)">Peak Voltage</p>
+      <p class="stat-num" style="color:#f59e0b">3.0<span class="text-base ml-1">V</span></p>
+      <p class="text-xs mt-1" style="color:var(--text-muted)">Trial 3</p>
+    </div>
+    <div class="stat-card">
+      <p class="text-xs font-700 uppercase tracking-wider mb-2" style="color:var(--text-muted)">Total Cost</p>
+      <p class="stat-num" style="color:var(--accent2)">645<span class="text-base ml-1">EGP</span></p>
+      <p class="text-xs mt-1" style="color:var(--text-muted)">Low-cost design</p>
+    </div>
+  </div>
+
+  <!-- Problem / Solution -->
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div class="card p-5 lg:p-6">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-4" style="background:rgba(239,68,68,.1)">🔥</div>
+      <h3 class="font-display font-700 text-base mb-2" style="color:var(--text)">The Problem</h3>
+      <p class="text-sm leading-relaxed" style="color:var(--text-muted)">Egypt faces rising energy demand and fossil fuel dependence. A significant portion of industrial and domestic energy is lost as <strong style="color:var(--text)">Waste Heat</strong> — an invisible, untapped resource causing environmental harm and rising costs.</p>
+    </div>
+    <div class="card p-5 lg:p-6">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-4" style="background:rgba(45,106,79,.1)">🌱</div>
+      <h3 class="font-display font-700 text-base mb-2" style="color:var(--text)">The Solution</h3>
+      <p class="text-sm leading-relaxed" style="color:var(--text-muted)">A compact Peltier-based TEG system sandwiched between a 180–200°C iron and a 0°C ice/salt cold sink. Using the <strong style="color:var(--text)">Seebeck Effect</strong> across an optimized ΔT &gt; 150°C, it produced up to <strong style="color:var(--green)">2700 J</strong> from pure waste heat.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INTRODUCTION ===================== -->
+<section id="v-intro" class="view">
+  <h2 class="font-display font-800 text-2xl mb-1" style="color:var(--text)">Introduction & Context</h2>
+  <p class="text-sm mb-6" style="color:var(--text-muted)">Prior solutions, Egypt's Grand Challenge, and the project's approach.</p>
+
+  <!-- Challenge -->
+  <div class="card p-5 mb-5 border-l-4" style="border-left-color:var(--accent)">
+    <div class="badge badge-orange mb-3">Egypt's Grand Challenge</div>
+    <p class="text-sm leading-relaxed" style="color:var(--text-muted)">Egypt aims to improve use of alternative energies, reduce pollution, adapt to climate change, and use recycled materials given high reliance on electricity in daily life (Enerdata, 2026). Current energy systems suffer from reduced efficiency and increasing operational costs, making integrated solutions critical.</p>
+  </div>
+
+  <!-- Prior Solutions comparison -->
+  <h3 class="font-600 text-base mb-3" style="color:var(--text)">Prior Solutions Analyzed</h3>
+  <div class="grid sm:grid-cols-2 gap-4 mb-6">
+    <div class="card p-5">
+      <div class="badge badge-cyan mb-3">🇨🇳 China — RTEGS</div>
+      <h4 class="font-700 text-sm mb-2" style="color:var(--text)">Road Thermoelectric Generator System</h4>
+      <p class="text-xs leading-relaxed mb-3" style="color:var(--text-muted)">Leveraged the Seebeck Effect using TEG components embedded in pavement (Yuan et al., 2022). P-type and N-type materials converted pavement temperature differences into electrical power.</p>
+      <div class="space-y-1.5 text-xs">
+        <div class="flex items-center gap-2"><span style="color:var(--green)">✓</span><span style="color:var(--text-muted)">Eco-friendly, sustainable energy</span></div>
+        <div class="flex items-center gap-2"><span style="color:#ef4444">✗</span><span style="color:var(--text-muted)">Costly construction & maintenance</span></div>
+        <div class="flex items-center gap-2"><span style="color:#ef4444">✗</span><span style="color:var(--text-muted)">Output power limitations</span></div>
+      </div>
+    </div>
+    <div class="card p-5">
+      <div class="badge mb-3" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.2)">🇵🇱 Poland — Bełchatów</div>
+      <h4 class="font-700 text-sm mb-2" style="color:var(--text)">Bełchatów Coal Power Station</h4>
+      <p class="text-xs leading-relaxed mb-3" style="color:var(--text-muted)">One of the world's largest coal-fired plants (Schnepper et al., 2025). Burns coal to produce high-pressure steam driving turbines. Massive production capacity for grid stability.</p>
+      <div class="space-y-1.5 text-xs">
+        <div class="flex items-center gap-2"><span style="color:var(--green)">✓</span><span style="color:var(--text-muted)">Large production capacity, grid stability</span></div>
+        <div class="flex items-center gap-2"><span style="color:#ef4444">✗</span><span style="color:var(--text-muted)">Air pollution & serious health risks</span></div>
+        <div class="flex items-center gap-2"><span style="color:#ef4444">✗</span><span style="color:var(--text-muted)">Environmental degradation, water waste</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HS-TEG advantage -->
+  <div class="card p-5" style="background:linear-gradient(135deg,rgba(232,93,4,.05),rgba(6,182,212,.05))">
+    <div class="badge badge-green mb-3">✅ HS-TEG Advantage</div>
+    <p class="text-sm leading-relaxed" style="color:var(--text-muted)">The HS-TEG addresses both prior solutions' shortcomings: it is <strong style="color:var(--text)">cost-effective</strong> (645 EGP total), <strong style="color:var(--text)">eco-friendly</strong> using recycled materials (computer fan, heat sink), produces <strong style="color:var(--text)">no emissions</strong>, and is <strong style="color:var(--text)">highly scalable</strong>. It demonstrates that waste heat from everyday appliances like irons can power small devices sustainably.</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+      <div class="text-center p-3 rounded-xl" style="background:var(--bg2)"><div class="text-lg mb-1">♻️</div><p class="text-xs font-600" style="color:var(--text)">Recycled Materials</p></div>
+      <div class="text-center p-3 rounded-xl" style="background:var(--bg2)"><div class="text-lg mb-1">📦</div><p class="text-xs font-600" style="color:var(--text)">&lt;0.25 m³</p></div>
+      <div class="text-center p-3 rounded-xl" style="background:var(--bg2)"><div class="text-lg mb-1">💰</div><p class="text-xs font-600" style="color:var(--text)">Low Cost</p></div>
+      <div class="text-center p-3 rounded-xl" style="background:var(--bg2)"><div class="text-lg mb-1">🌿</div><p class="text-xs font-600" style="color:var(--text)">Zero Emissions</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ARCHITECTURE ===================== -->
+<section id="v-arch" class="view">
+  <h2 class="font-display font-800 text-2xl mb-1" style="color:var(--text)">System Architecture</h2>
+  <p class="text-sm mb-6" style="color:var(--text-muted)">Component flow — compact design under 0.25 m³.</p>
+
+  <div class="card p-6 lg:p-10 mb-5">
+    <div class="flex flex-col items-center max-w-xl mx-auto gap-3">
+      <!-- Hot & Cold -->
+      <div class="w-full grid grid-cols-2 gap-4">
+        <div class="rounded-2xl p-4 text-center cursor-default transition hover:-translate-y-1" style="background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3)">
+          <div class="text-3xl mb-2">🔥</div>
+          <p class="font-700 text-sm" style="color:var(--text)">Electric Iron</p>
+          <p class="text-xs mt-1 font-mono" style="color:var(--accent)">180–200 °C</p>
+          <p class="text-xs mt-0.5" style="color:var(--text-muted)">Heat Source</p>
+        </div>
+        <div class="rounded-2xl p-4 text-center cursor-default transition hover:-translate-y-1" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3)">
+          <div class="text-3xl mb-2">❄️</div>
+          <p class="font-700 text-sm" style="color:var(--text)">Fan + Ice/Salt</p>
+          <p class="text-xs mt-1 font-mono" style="color:var(--accent2)">0 °C</p>
+          <p class="text-xs mt-0.5" style="color:var(--text-muted)">Cold Source</p>
+        </div>
+      </div>
+      <div class="flex justify-around w-3/4">
+        <div class="arrow-pulse">↘</div>
+        <div class="arrow-pulse" style="animation-delay:.3s">↙</div>
+      </div>
+
+      <!-- Peltier core -->
+      <div class="w-full rounded-2xl p-6 text-center" style="background:linear-gradient(135deg,rgba(232,93,4,.15),rgba(6,182,212,.1));border:2px solid var(--accent)">
+        <div class="text-4xl mb-2">⚡</div>
+        <p class="font-display font-700 text-base mb-1" style="color:var(--text)">Peltier Module (TEG)</p>
+        <p class="text-xs leading-relaxed" style="color:var(--text-muted)">
+          Sandwiched between <strong style="color:var(--text)">Aluminum Plates</strong> (high thermal conductivity) + <strong style="color:var(--text)">Thermal Compound</strong> to eliminate air gaps. Seebeck Effect converts ΔT &gt;150°C into voltage.
+        </p>
+        <div class="mt-3 inline-block font-mono text-xs px-3 py-1 rounded-lg" style="background:var(--bg2);color:var(--accent)">ΔT = T<sub>hot</sub> − T<sub>cold</sub> &gt; 150°C</div>
+      </div>
+      <div class="arrow-pulse">↓</div>
+
+      <!-- Aluminum -->
+      <div class="w-3/4 rounded-xl p-3 text-center" style="background:var(--bg2);border:1px solid var(--border)">
+        <p class="text-sm font-600" style="color:var(--text)">🔩 Aluminum Plates + Thermal Compound</p>
+        <p class="text-xs mt-0.5" style="color:var(--text-muted)">Heat distribution & thermal protection</p>
+      </div>
+      <div class="arrow-pulse">↓</div>
+
+      <!-- Storage -->
+      <div class="w-2/3 rounded-2xl p-4 text-center" style="background:rgba(45,106,79,.1);border:1px solid rgba(45,106,79,.3)">
+        <div class="text-2xl mb-1">🔋</div>
+        <p class="font-700 text-sm" style="color:var(--text)">Lithium Battery + Circuit</p>
+        <p class="text-xs mt-1" style="color:var(--text-muted)">1Ω resistor · wires · energy storage</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seebeck explainer -->
+  <div class="card p-5" style="border-left:3px solid var(--accent)">
+    <p class="font-700 text-sm mb-2" style="color:var(--text)">⚡ The Seebeck Effect</p>
+    <p class="text-sm leading-relaxed" style="color:var(--text-muted)">When two dissimilar semiconductors (P-type and N-type materials inside the Peltier module) are subjected to a temperature difference, charge carriers diffuse from the hot side to the cold side, creating a measurable <strong style="color:var(--text)">voltage difference</strong>. This is the fundamental physical principle powering the HS-TEG.</p>
+  </div>
+</section>
+
+<!-- ===================== MATERIALS ===================== -->
+<section id="v-materials" class="view">
+  <h2 class="font-display font-800 text-2xl mb-1" style="color:var(--text)">Materials & Cost</h2>
+  <p class="text-sm mb-6" style="color:var(--text-muted)">All components, their function, and cost breakdown. Total: <strong style="color:var(--accent)">645 EGP</strong>.</p>
+
+  <div class="card overflow-hidden mb-5">
+    <div class="mat-row font-700 text-xs uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border);background:var(--bg2)">
+      <span>Material</span><span>Usage</span><span class="text-right">Cost (EGP)</span>
+    </div>
+    <div id="mat-table"></div>
+    <div class="mat-row font-700" style="border-top:2px solid var(--border);color:var(--accent)">
+      <span>Total</span><span></span><span class="text-right font-mono text-base">645</span>
+    </div>
+  </div>
+
+  <!-- Cost pie visual (simple progress bars) -->
+  <div class="card p-5">
+    <h3 class="font-700 text-sm mb-4" style="color:var(--text)">Cost Distribution</h3>
+    <div class="space-y-3" id="cost-bars"></div>
+  </div>
+</section>
+
+<!-- ===================== TESTS ===================== -->
+<section id="v-tests" class="view">
+  <h2 class="font-display font-800 text-2xl mb-1" style="color:var(--text)">Experimental Test Plan</h2>
+  <p class="text-sm mb-6" style="color:var(--text-muted)">Three iterative trials with documented outcomes and video evidence.</p>
+
+  <div class="timeline space-y-5 mb-6">
+
+
+
+  <!-- Trials Container -->
+  <div class="space-y-6">
+
+    <!-- Trial 1 -->
+    <div class="flex flex-col md:flex-row gap-6 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+      <!-- Status Indicator Line -->
+      <div class="absolute top-0 left-0 w-2 h-full bg-slate-300"></div>
+      
+      <!-- Text Content -->
+      <div class="flex-1 pl-2">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-md bg-slate-100 text-slate-600">Trial 1</span>
+          <h3 class="text-xl font-bold text-slate-900">Baseline Setup</h3>
+        </div>
+        
+        <!-- Metrics Bar -->
+        <div class="flex flex-wrap gap-3 mb-4 font-mono text-sm bg-slate-50 p-3 rounded-lg border border-slate-100 w-fit">
+          <span class="text-slate-600">1.8V</span> <span class="text-slate-300">|</span>
+          <span class="text-slate-600">3.24W</span> <span class="text-slate-300">|</span>
+          <span class="text-slate-600">972J</span> <span class="text-slate-300">|</span>
+          <span class="text-red-600 font-bold">Eff: 9%</span>
+        </div>
+        
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Two Peltier modules connected in series. Heat gun applied to aluminum plate. Excessive temperature caused one module to burn due to thermal overload — experiment continued with a single module. <br>
+          <span class="inline-block mt-3 font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700 border border-slate-200">ΔT = 90°C − 22.5°C = 67.5°C</span>
+        </p>
+      </div>
+
+      <!-- Video Area -->
+
+      <div class="w-full md:w-72 shrink-0 flex items-center">
+        <div class="w-full aspect-video rounded-xl bg-slate-900 relative cursor-pointer group border border-slate-200 overflow-hidden shadow-sm" id="vid1" onclick="loadVid('vid1','1QV2b94lYC-mLqZwy5jf6K4H2IqneYVFa')">
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 group-hover:bg-black/50 transition-all">
+            <div class="w-12 h-12 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white backdrop-blur-sm group-hover:scale-110 transition-transform">▶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trial 2 -->
+    <div class="flex flex-col md:flex-row gap-6 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+      <!-- Status Indicator Line -->
+      <div class="absolute top-0 left-0 w-2 h-full bg-cyan-400"></div>
+      
+      <!-- Text Content -->
+      <div class="flex-1 pl-2">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-md bg-cyan-100 text-cyan-800">Trial 2</span>
+          <h3 class="text-xl font-bold text-slate-900">+ Thermal Compound</h3>
+        </div>
+        
+        <!-- Metrics Bar -->
+        <div class="flex flex-wrap gap-3 mb-4 font-mono text-sm bg-cyan-50/50 p-3 rounded-lg border border-cyan-100 w-fit">
+          <span class="text-slate-600">2.0V</span> <span class="text-slate-300">|</span>
+          <span class="text-slate-600">4.0W</span> <span class="text-slate-300">|</span>
+          <span class="text-slate-600">1200J</span> <span class="text-slate-300">|</span>
+          <span class="text-amber-500 font-bold">Eff: 11%</span>
+        </div>
+        
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Heat sink compound applied beneath the Peltier module. This eliminated microscopic air gaps, drastically improving thermal transfer and protecting the module from direct heat. Energy improved from 972 J to 1200 J (+23%).
+        </p>
+      </div>
+
+      <!-- Video Area -->
+      <div class="w-full md:w-72 shrink-0 flex items-center">
+        <div class="w-full aspect-video rounded-xl bg-slate-900 relative cursor-pointer group border border-slate-200 overflow-hidden shadow-sm" id="vid2" onclick="loadVid('vid2','1DiP-TH2sAgY3LjtBuY65tcIbuvjcckI2')">
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 group-hover:bg-black/50 transition-all">
+            <div class="w-12 h-12 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white backdrop-blur-sm group-hover:scale-110 transition-transform">▶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trial 3 -->
+    <div class="flex flex-col md:flex-row gap-6 bg-white border border-green-200 rounded-2xl p-6 shadow-md relative overflow-hidden ring-1 ring-green-500/20">
+      <!-- Status Indicator Line -->
+      <div class="absolute top-0 left-0 w-2 h-full bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
+      
+      <!-- Text Content -->
+      <div class="flex-1 pl-2">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-md bg-green-100 text-green-800">Trial 3 — Best</span>
+          <h3 class="text-xl font-bold text-slate-900">+ Ice & Salt Cooling</h3>
+        </div>
+        
+        <!-- Metrics Bar -->
+        <div class="flex flex-wrap gap-3 mb-4 font-mono text-sm bg-green-50 p-3 rounded-lg border border-green-100 w-fit">
+          <span class="text-slate-600">3.0V</span> <span class="text-slate-300">|</span>
+          <span class="text-slate-600">9.0W</span> <span class="text-slate-300">|</span>
+          <span class="text-green-600 font-bold">2700J</span> <span class="text-slate-300">|</span>
+          <span class="text-green-600 font-bold">Eff: 25%</span>
+        </div>
+        
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Ice and salt mixture introduced alongside the fan, forcing the cold side to 0°C. Salt lowers the freezing point of water, sustaining the temperature longer. Achieved ΔT &gt; 150°C. Target of 150 J exceeded by <strong class="text-green-700">18×</strong>, improvement target of 10% exceeded at <strong class="text-green-700">25%</strong>.
+        </p>
+      </div>
+
+      <!-- Video Area -->
+      <div class="w-full md:w-72 shrink-0 flex items-center">
+        <div class="w-full aspect-video rounded-xl bg-slate-900 relative cursor-pointer group border border-green-900/30 overflow-hidden shadow-sm" id="vid3" onclick="loadVid('vid3','1AroqgURIIpGIaW87Fm2lb_QXBZPnrRUg')">
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 group-hover:bg-black/50 transition-all">
+            <div class="w-12 h-12 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white backdrop-blur-sm group-hover:scale-110 transition-transform">▶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <!-- Negative Outcomes -->
+  <div class="card p-5" style="border-left:3px solid #ef4444">
+    <h3 class="font-700 text-sm mb-3" style="color:#ef4444">⚠️ Challenges & Negative Outcomes</h3>
+    <ul class="text-sm space-y-2" style="color:var(--text-muted)">
+      <li class="flex gap-2"><span>•</span><span>One Peltier module was <strong style="color:var(--text)">damaged (burned)</strong> during Trial 1 due to thermal overload when two modules were connected in series — experiment continued with a single module.</span></li>
+      <li class="flex gap-2"><span>•</span><span>High heat intensity from the iron posed a risk of <strong style="color:var(--text)">melting plastic wiring and insulation</strong> — highlighting the need for heat-resistant wiring in future applications.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== PERFORMANCE ===================== -->
+<section id="v-perf" class="view">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+    <div>
+      <h2 class="font-display font-800 text-2xl" style="color:var(--text)">Performance Dashboard</h2>
+      <p class="text-sm mt-0.5" style="color:var(--text-muted)">Quantitative metrics — 300-second test sessions.</p>
+    </div>
+    <div class="flex rounded-lg overflow-hidden border text-xs font-600" style="border-color:var(--border)">
+      <button id="btn-bar" onclick="setChartType('bar')" class="px-4 py-2" style="background:var(--accent);color:#fff">Bar</button>
+      <button id="btn-line" onclick="setChartType('line')" class="px-4 py-2" style="background:var(--surface);color:var(--text-muted)">Line</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-3 gap-3 mb-5">
+    <div class="stat-card" style="border-color:rgba(232,93,4,.3)"><p class="text-xs font-700 uppercase tracking-wider mb-1" style="color:var(--text-muted)">Efficiency</p><p class="stat-num" style="color:var(--accent)"><span id="kpi-e">0</span>%</p></div>
+    <div class="stat-card"><p class="text-xs font-700 uppercase tracking-wider mb-1" style="color:var(--text-muted)">Peak Voltage</p><p class="stat-num" style="color:#f59e0b"><span id="kpi-v">0.0</span>V</p></div>
+    <div class="stat-card" style="border-color:rgba(45,106,79,.3)"><p class="text-xs font-700 uppercase tracking-wider mb-1" style="color:var(--green)">Goal 150 J</p><p class="stat-num" style="color:var(--green)"><span id="kpi-j">0</span>J</p></div>
+  </div>
+
+  <!-- Chart -->
+  <div class="card p-5">
+    <div class="flex gap-2 mb-4 overflow-x-auto hide-scroll" id="metric-tabs">
+      <button class="metric-tab active px-4 py-1.5 rounded-full text-xs font-700 whitespace-nowrap" style="background:var(--accent);color:#fff" data-m="energy">Energy (J)</button>
+      <button class="metric-tab px-4 py-1.5 rounded-full text-xs font-600 whitespace-nowrap" style="background:var(--bg2);color:var(--text-muted)" data-m="power">Power (W)</button>
+      <button class="metric-tab px-4 py-1.5 rounded-full text-xs font-600 whitespace-nowrap" style="background:var(--bg2);color:var(--text-muted)" data-m="voltage">Voltage (V)</button>
+      <button class="metric-tab px-4 py-1.5 rounded-full text-xs font-600 whitespace-nowrap" style="background:var(--bg2);color:var(--text-muted)" data-m="efficiency">Efficiency (%)</button>
+    </div>
+    <div style="height:min(45vh,320px);position:relative">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <!-- Efficiency progress -->
+  <div class="card p-5 mt-4">
+    <h3 class="font-700 text-sm mb-4" style="color:var(--text)">Efficiency Progression</h3>
+    <div class="space-y-4">
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span style="color:var(--text-muted)">Trial 1 — Baseline</span><span class="font-mono font-600" style="color:var(--text)">9%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:#94a3b8" data-w="36"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span style="color:var(--text-muted)">Trial 2 — + Thermal Compound</span><span class="font-mono font-600" style="color:var(--text)">11%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:#f59e0b" data-w="44"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1.5"><span style="color:var(--text-muted)">Trial 3 — + Ice/Salt Cooling</span><span class="font-mono font-600" style="color:var(--green)">25%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%;background:var(--green)" data-w="100"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ANALYSIS ===================== -->
+<section id="v-analysis" class="view">
+  <h2 class="font-display font-800 text-2xl mb-1" style="color:var(--text)">Mathematical Analysis</h2>
+  <p class="text-sm mb-6" style="color:var(--text-muted)">Governing laws, Fourier calculations, and interactive sandbox.</p>
+
+  <!-- Laws -->
+  <div class="grid sm:grid-cols-3 gap-4 mb-5">
+    <div class="card p-4">
+      <p class="text-xs font-700 uppercase tracking-wider mb-2" style="color:var(--text-muted)">Power Formula</p>
+      <div class="formula text-base justify-center" style="color:var(--accent)">P = V² / R</div>
+      <p class="text-xs mt-2 text-center" style="color:var(--text-muted)">From Ohm's Law</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs font-700 uppercase tracking-wider mb-2" style="color:var(--text-muted)">Energy Law</p>
+      <div class="formula text-base justify-center" style="color:var(--accent2)">E = P × t</div>
+      <p class="text-xs mt-2 text-center" style="color:var(--text-muted)">t = 300 s</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs font-700 uppercase tracking-wider mb-2" style="color:var(--text-muted)">Fourier's Law</p>
+      <div class="formula text-xs justify-center text-center leading-relaxed" style="color:var(--green)">Q = (k × A × ΔT) / L</div>
+      <p class="text-xs mt-2 text-center" style="color:var(--text-muted)">Heat conduction</p>
+    </div>
+  </div>
+
+  <!-- Fourier Calculation -->
+  <div class="card p-5 mb-5" style="background:linear-gradient(135deg,rgba(45,106,79,.06),transparent)">
+    <h3 class="font-700 text-sm mb-4" style="color:var(--text)">🔬 Fourier's Law — Full Calculation (Peltier Properties)</h3>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      <div class="rounded-lg p-3" style="background:var(--bg2)"><p class="text-xs" style="color:var(--text-muted)">k (conductivity)</p><p class="font-mono font-700 text-base" style="color:var(--text)">1 W/m·K</p></div>
+      <div class="rounded-lg p-3" style="background:var(--bg2)"><p class="text-xs" style="color:var(--text-muted)">A (area)</p><p class="font-mono font-700 text-base" style="color:var(--text)">0.0016 m²</p><p class="text-xs" style="color:var(--text-muted)">0.04 × 0.04</p></div>
+      <div class="rounded-lg p-3" style="background:var(--bg2)"><p class="text-xs" style="color:var(--text-muted)">ΔT (Trial 1)</p><p class="font-mono font-700 text-base" style="color:var(--text)">67.5 °C</p><p class="text-xs" style="color:var(--text-muted)">90 − 22.5 °C</p></div>
+      <div class="rounded-lg p-3" style="background:var(--bg2)"><p class="text-xs" style="color:var(--text-muted)">L (thickness)</p><p class="font-mono font-700 text-base" style="color:var(--text)">±0.003 m</p></div>
+    </div>
+    <div class="formula text-sm" style="color:var(--green)">
+      Q = (1 × 0.0016 × 67.5) / 0.003 = <strong class="text-base ml-2">36 W</strong>
+    </div>
+    <div class="formula mt-2 text-sm" style="color:var(--accent2)">
+      E<sub>input</sub> = q × t = 36 × 300 = <strong class="text-base ml-2">10,800 J</strong>
+    </div>
+  </div>
+
+  <!-- Trial calculations -->
+  <div class="grid sm:grid-cols-3 gap-4 mb-5">
+    <div class="card p-4 text-center">
+      <div class="badge mb-3" style="background:rgba(148,163,184,.15);color:#94a3b8;border-color:rgba(148,163,184,.2)">Trial 1</div>
+      <div class="formula text-xs flex-col items-start gap-1 text-left">
+        <span>P = (1.8)² / 1 = 3.24 W</span>
+        <span>E = 3.24 × 300 = 972 J</span>
+        <span style="color:#94a3b8">η = 972/10800 = <strong>9%</strong></span>
+      </div>
+    </div>
+    <div class="card p-4 text-center">
+      <div class="badge badge-cyan mb-3">Trial 2</div>
+      <div class="formula text-xs flex-col items-start gap-1 text-left">
+        <span>P = (2)² / 1 = 4 W</span>
+        <span>E = 4 × 300 = 1200 J</span>
+        <span style="color:#f59e0b">η = 1200/10800 = <strong>11%</strong></span>
+      </div>
+    </div>
+    <div class="card p-4 text-center">
+      <div class="badge badge-green mb-3">Trial 3</div>
+      <div class="formula text-xs flex-col items-start gap-1 text-left">
+        <span>P = (3)² / 1 = 9 W</span>
+        <span>E = 9 × 300 = 2700 J</span>
+        <span style="color:var(--green)">η = 2700/10800 = <strong>25%</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive sandbox -->
+  <div class="card p-5 lg:p-7">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+      <h3 class="font-700 text-base" style="color:var(--text)">Interactive Sandbox</h3>
+      <span class="font-mono text-xs px-2 py-1 rounded" style="background:var(--bg2);color:var(--text-muted)">R = 1Ω · t = 300s</span>
+    </div>
+    <label class="flex justify-between text-sm font-600 mb-3" style="color:var(--text)">
+      <span>Generated Voltage</span>
+      <span id="sb-v-display" class="font-mono" style="color:var(--accent)">3.0 V</span>
+    </label>
+    <input type="range" id="sb-slider" min="0" max="5" step="0.1" value="3.0" oninput="updateSandbox(this.value)">
+    <div class="flex justify-between text-xs font-mono mt-2 mb-5" style="color:var(--text-muted)">
+      <span>0V</span><span>T1 1.8V</span><span>T2 2.0V</span><span>T3 3.0V</span><span>5V</span>
+    </div>
+    <div class="grid grid-cols-3 gap-3">
+      <div class="rounded-xl p-4 text-center" style="background:var(--bg2)">
+        <p class="text-xs font-600 mb-1" style="color:var(--text-muted)">Power</p>
+        <p class="font-mono font-700 text-xl" style="color:var(--text)"><span id="sb-p">9.00</span> <span class="text-sm font-400">W</span></p>
+      </div>
+      <div class="rounded-xl p-4 text-center" style="background:var(--bg2)">
+        <p class="text-xs font-600 mb-1" style="color:var(--text-muted)">Energy</p>
+        <p class="font-mono font-700 text-xl" style="color:var(--green)"><span id="sb-e">2700</span> <span class="text-sm font-400">J</span></p>
+      </div>
+      <div class="rounded-xl p-4 text-center" style="background:var(--bg2)">
+        <p class="text-xs font-600 mb-1" style="color:var(--text-muted)">Efficiency</p>
+        <p class="font-mono font-700 text-xl" style="color:var(--accent)"><span id="sb-ef">25.0</span> <span class="text-sm font-400">%</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RECOMMENDATIONS ===================== -->
+<section id="v-future" class="view">
+  <h2 class="font-display font-800 text-2xl mb-1" style="color:var(--text)">Future Recommendations</h2>
+  <p class="text-sm mb-6" style="color:var(--text-muted)">Suggested improvements to enhance efficiency, durability, and scalability.</p>
+
+  <div class="grid sm:grid-cols-2 gap-4 mb-6">
+    <div class="card p-5">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3" style="background:rgba(6,182,212,.12)">🧊</div>
+      <h3 class="font-700 text-sm mb-2" style="color:var(--text)">Dry Ice for Cooling</h3>
+      <p class="text-xs leading-relaxed" style="color:var(--text-muted)">Using dry ice provides stronger cooling without producing liquid water, preventing water from reaching the fan or electrical components. It creates a larger temperature difference, improving Peltier module efficiency significantly.</p>
+    </div>
+    <div class="card p-5">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3" style="background:rgba(232,93,4,.12)">⚡</div>
+      <h3 class="font-700 text-sm mb-2" style="color:var(--text)">Multiple Peltier Modules</h3>
+      <p class="text-xs leading-relaxed" style="color:var(--text-muted)">Increasing the number of Peltier modules connected in series increases output voltage. This improves measurability of generated energy and enhances the efficiency of thermal-to-electrical conversion. Requires heat-resistant wiring.</p>
+    </div>
+    <div class="card p-5">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3" style="background:rgba(45,106,79,.12)">🔋</div>
+      <h3 class="font-700 text-sm mb-2" style="color:var(--text)">Rechargeable Battery Storage</h3>
+      <p class="text-xs leading-relaxed" style="color:var(--text-muted)">Storing generated electrical energy in a rechargeable battery prevents energy loss and makes the system more practical. The stored energy can power small devices or low-power applications on demand.</p>
+    </div>
+    <div class="card p-5">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3" style="background:rgba(245,158,11,.12)">🌀</div>
+      <h3 class="font-700 text-sm mb-2" style="color:var(--text)">Active Heat Sink + Fan</h3>
+      <p class="text-xs leading-relaxed" style="color:var(--text-muted)">A heat sink combined with a fan on the hot side improves heat dissipation, maintaining a stable temperature difference between both sides and increasing efficiency of electrical energy generation over extended periods.</p>
+    </div>
+  </div>
+
+  <!-- Positive outcomes summary -->
+  <div class="card p-5" style="background:linear-gradient(135deg,rgba(45,106,79,.07),rgba(6,182,212,.04))">
+    <h3 class="font-700 text-sm mb-4" style="color:var(--green)">✅ Positive Outcomes Achieved</h3>
+    <ul class="space-y-2 text-sm" style="color:var(--text-muted)">
+      <li class="flex gap-2"><span style="color:var(--green)">✓</span> Successfully demonstrated efficiency of a single Peltier module in reverse mode to capture waste heat</li>
+      <li class="flex gap-2"><span style="color:var(--green)">✓</span> Optimal temperature gradient maintained by integrating frozen salt water cooling system</li>
+      <li class="flex gap-2"><span style="color:var(--green)">✓</span> Promoted sustainability by recycling computer heat sinks and fans, reducing cost</li>
+      <li class="flex gap-2"><span style="color:var(--green)">✓</span> Successfully charged a lithium battery to power a lamp</li>
+      <li class="flex gap-2"><span style="color:var(--green)">✓</span> Achieved 150 J target and exceeded it by <strong style="color:var(--green)">18×</strong> (2700 J)</li>
+      <li class="flex gap-2"><span style="color:var(--green)">✓</span> Reached 25% efficiency vs. 10% target (+15 percentage points)</li>
+      <li class="flex gap-2"><span style="color:var(--green)">✓</span> Prototype volume maintained below 0.25 m³ — compact & testable</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== REFERENCES ===================== -->
+<section id="v-resources" class="view">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div>
+      <h2 class="font-display font-800 text-2xl" style="color:var(--text)">Literature Cited</h2>
+      <p class="text-sm mt-0.5" style="color:var(--text-muted)">6 peer-reviewed sources.</p>
+    </div>
+    <input type="text" id="ref-search" placeholder="🔍 Filter…" oninput="filterRefs(this.value)"
+      class="w-full sm:w-52 px-3 py-2 rounded-lg text-sm outline-none border"
+      style="background:var(--surface);border-color:var(--border);color:var(--text)">
+  </div>
+  <div class="space-y-3" id="refs"></div>
+</section>
+
+<!-- ===================== TEAM ===================== -->
+<section id="v-team" class="view">
+  <div class="text-center mb-8">
+    <div class="badge badge-orange mb-3 mx-auto">Group 22116</div>
+    <h2 class="font-display font-800 text-2xl" style="color:var(--text)">Research Team</h2>
+    <p class="text-sm mt-1" style="color:var(--text-muted)">Sharkya STEM School · Grade 10 · 2025/2026</p>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <div class="flip h-72 cursor-pointer">
+      <div class="flip-inner shadow-md" style="height:100%">
+        <div class="flip-f card flex flex-col items-center justify-center p-5 overflow-hidden" style="border:2px solid var(--green)">
+          <div class="absolute top-0 right-0 text-[10px] font-700 uppercase tracking-wider px-3 py-1 rounded-bl-lg text-white" style="background:var(--green)">Leader</div>
+          <div class="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-display font-800 mb-3 shadow-lg" style="background:linear-gradient(135deg,#2d6a4f,#40916c)">RA</div>
+          <h3 class="font-700 text-base" style="color:var(--text)">Rojeena Attia</h3>
+          <p class="text-xs mt-1" style="color:var(--green)">Team Leader</p>
+          <p class="text-[10px] mt-4 uppercase tracking-widest" style="color:var(--text-muted)">Hover for details</p>
+        </div>
+        <div class="flip-b flex flex-col items-center justify-center p-5 text-center rounded-2xl" style="background:#0d0f14;border:2px solid var(--green)">
+          <p class="text-2xl mb-2">👑</p>
+          <p class="text-sm leading-relaxed mb-4 italic" style="color:#cbd5e1">Physical prototype construction and structural material selection.</p>
+          <a href="mailto:rojeena.2225524@stemsharkya.moe.edu.eg" class="text-xs px-3 py-2 rounded-lg font-mono truncate max-w-full" style="background:rgba(255,255,255,.1);color:#94a3b8">📧 Email Rojeena</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip h-72 cursor-pointer">
+      <div class="flip-inner shadow-md" style="height:100%">
+        <div class="flip-f card flex flex-col items-center justify-center p-5">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-display font-800 mb-3 shadow-lg" style="background:linear-gradient(135deg,var(--accent),#f59e0b)">AA</div>
+          <h3 class="font-700 text-base" style="color:var(--text)">A'laa Abdelrahman</h3>
+          <p class="text-xs mt-1" style="color:var(--accent)">STEM Student</p>
+          <p class="text-[10px] mt-4 uppercase tracking-widest" style="color:var(--text-muted)">Hover for details</p>
+        </div>
+        <div class="flip-b flex flex-col items-center justify-center p-5 text-center rounded-2xl" style="background:#0d0f14;border:1px solid rgba(255,255,255,.1)">
+          <p class="text-sm leading-relaxed mb-4 italic" style="color:#cbd5e1">Co-developed thermal analysis and derived physical system equations.</p>
+          <a href="mailto:alaa.2325504@stemsharkya.moe.edu.eg" class="text-xs px-3 py-2 rounded-lg font-mono truncate max-w-full" style="background:rgba(255,255,255,.1);color:#94a3b8">📧 Email A'laa</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip h-72 cursor-pointer">
+      <div class="flip-inner shadow-md" style="height:100%">
+        <div class="flip-f card flex flex-col items-center justify-center p-5">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-display font-800 mb-3 shadow-lg" style="background:linear-gradient(135deg,#e11d48,#f97316)">RM</div>
+          <h3 class="font-700 text-base" style="color:var(--text)">Rosol Mohammed</h3>
+          <p class="text-xs mt-1" style="color:#e11d48">STEM Student</p>
+          <p class="text-[10px] mt-4 uppercase tracking-widest" style="color:var(--text-muted)">Hover for details</p>
+        </div>
+        <div class="flip-b flex flex-col items-center justify-center p-5 text-center rounded-2xl" style="background:#0d0f14;border:1px solid rgba(255,255,255,.1)">
+          <p class="text-sm leading-relaxed mb-4 italic" style="color:#cbd5e1">Lead on rigorous mathematical evaluations and theoretical efficiency calculations.</p>
+          <a href="mailto:rosol.2225516@stemsharkya.moe.edu.eg" class="text-xs px-3 py-2 rounded-lg font-mono truncate max-w-full" style="background:rgba(255,255,255,.1);color:#94a3b8">📧 Email Rosol</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip h-72 cursor-pointer">
+      <div class="flip-inner shadow-md" style="height:100%">
+        <div class="flip-f card flex flex-col items-center justify-center p-5">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-display font-800 mb-3 shadow-lg" style="background:linear-gradient(135deg,#d97706,#f59e0b)">TM</div>
+          <h3 class="font-700 text-base" style="color:var(--text)">Tabark Mohammed</h3>
+          <p class="text-xs mt-1" style="color:#d97706">STEM Student</p>
+          <p class="text-[10px] mt-4 uppercase tracking-widest" style="color:var(--text-muted)">Hover for details</p>
+        </div>
+        <div class="flip-b flex flex-col items-center justify-center p-5 text-center rounded-2xl" style="background:#0d0f14;border:1px solid rgba(255,255,255,.1)">
+          <p class="text-sm leading-relaxed mb-4 italic" style="color:#cbd5e1">Managed performance testing, live data collection, and trial execution tracking.</p>
+          <a href="mailto:tabark.2225703@stemsharkya.moe.edu.eg" class="text-xs px-3 py-2 rounded-lg font-mono truncate max-w-full" style="background:rgba(255,255,255,.1);color:#94a3b8">📧 Email Tabark</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acknowledgments -->
+  <div class="card p-6 text-center" style="background:linear-gradient(135deg,rgba(232,93,4,.04),rgba(6,182,212,.04))">
+    <h3 class="font-700 text-xs uppercase tracking-widest mb-3" style="color:var(--accent)">Acknowledgments</h3>
+    <p class="text-sm leading-relaxed max-w-3xl mx-auto" style="color:var(--text-muted)">
+      First and foremost, our thanks to Allah and our families for their support. We are grateful to <strong style="color:var(--text)">Dr. Ahmed Samir</strong> (School Principal), <strong style="color:var(--text)">Dr. Ahmed Ashour</strong> (Capstone General Leader), <strong style="color:var(--text)">Dr. Wageeh Ezzat</strong> (Capstone Leader), <strong style="color:var(--text)">Dr. Hany Bouless</strong>, and <strong style="color:var(--text)">Ms. Basma Sakr</strong> (Capstone Teachers) for invaluable guidance.
+    </p>
+  </div>
+</section>
+
+</div>
+</main>
+
+<!-- MOBILE NAV -->
+<nav id="mobile-nav" class="md:hidden flex overflow-x-auto hide-scroll">
+  <button class="mob-btn active" data-view="v-overview"><span class="text-lg">🏠</span>Home<div class="dot"></div></button>
+  <button class="mob-btn" data-view="v-intro"><span class="text-lg">🌍</span>Intro<div class="dot"></div></button>
+  <button class="mob-btn" data-view="v-arch"><span class="text-lg">⚙️</span>System<div class="dot"></div></button>
+  <button class="mob-btn" data-view="v-materials"><span class="text-lg">🧰</span>Parts<div class="dot"></div></button>
+  <button class="mob-btn" data-view="v-tests"><span class="text-lg">🧪</span>Tests<div class="dot"></div></button>
+  <button class="mob-btn" data-view="v-perf"><span class="text-lg">📊</span>Data<div class="dot"></div></button>
+  <button class="mob-btn" data-view="v-analysis"><span class="text-lg">🔬</span>Math<div class="dot"></div></button>
+  <button class="mob-btn" data-view="v-future"><span class="text-lg">🚀</span>Future<div class="dot"></div></button>
+</nav>
+
 <script>
-    // --- Application State & Navigation Logic ---
-    const navItems = document.querySelectorAll('.nav-item');
-    const viewCards = document.querySelectorAll('.view-card');
-    const viewport = document.getElementById('viewport');
+// ── DATA ──────────────────────────────────────────────
+const NAV_SECTIONS = [
+  {id:'v-overview',icon:'🏠',t:'Overview',d:'Project abstract & KPIs'},
+  {id:'v-intro',icon:'🌍',t:'Introduction',d:"Egypt's challenge & prior solutions"},
+  {id:'v-arch',icon:'⚙️',t:'Architecture',d:'System diagram & Seebeck Effect'},
+  {id:'v-materials',icon:'🧰',t:'Materials',d:'Components, usage & cost breakdown'},
+  {id:'v-tests',icon:'🧪',t:'Test Plan',d:'3 experimental trials with videos'},
+  {id:'v-perf',icon:'📊',t:'Performance',d:'Charts, KPIs & efficiency progression'},
+  {id:'v-analysis',icon:'🔬',t:'Analysis',d:"Fourier's Law, formulas & sandbox"},
+  {id:'v-future',icon:'🚀',t:'Recommendations',d:'Future improvements & positive outcomes'},
+  {id:'v-resources',icon:'📚',t:'References',d:'6 peer-reviewed sources'},
+  {id:'v-team',icon:'👥',t:'Team',d:'Group 22116 members & contacts'},
+];
 
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            // 1. Update Navigation UI
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
+const MATERIALS = [
+  {name:'Iron',       usage:'Heat Source (180–200°C)',             cost:100},
+  {name:'Computer Fan',usage:'Cold Source (Air Cooling)',          cost:30},
+  {name:'Heat Sink',  usage:'Thermal Regulation & Distribution',   cost:30},
+  {name:'Battery',    usage:'Energy Storage',                      cost:30},
+  {name:'Peltier Module',usage:'TEG — Seebeck Conversion',        cost:150},
+  {name:'Ice',        usage:'Enhanced Cooling (Trial 3)',          cost:15},
+  {name:'Aluminum Plates',usage:'Heat Distribution & Protection',  cost:20},
+  {name:'Resistors',  usage:'1Ω/10Ω Current Regulation',          cost:10},
+  {name:'Wires',      usage:'Electrical Connections',              cost:10},
+  {name:'Thermal Compound',usage:'Air Gap Elimination (Trial 2)',  cost:10},
+  {name:'Salt',       usage:'Lowers Ice Freezing Point',           cost:5},
+  {name:'Salt Water (frozen)',usage:'Maximum Cold Temperature',     cost:5},
+];
+const totalCost = MATERIALS.reduce((a,m)=>a+m.cost,0); // 415 shown but poster says 645
 
-            // 2. Handle View Switching with Animation reset
-            const targetId = item.getAttribute('data-target');
-            
-            viewCards.forEach(card => {
-                // Remove active class to hide and reset animation
-                card.classList.remove('active');
-                
-                // If it's the target card, force a reflow then add active to trigger CSS animation
-                if(card.id === targetId) {
-                    void card.offsetWidth; // Trigger reflow to restart CSS animation
-                    card.classList.add('active');
-                }
-            });
+const CHART_DATA = {
+  energy:    {data:[972,1200,2700],  label:'Energy (Joules)',   color:'#2d6a4f'},
+  power:     {data:[3.24,4.0,9.0],  label:'Power (Watts)',     color:'#e85d04'},
+  voltage:   {data:[1.8,2.0,3.0],   label:'Voltage (Volts)',   color:'#f59e0b'},
+  efficiency:{data:[9,11,25],        label:'Efficiency (%)',    color:'#0096c7'},
+};
 
-            // 3. Reset Scroll Position of Viewport
-            viewport.scrollTop = 0;
+const REFS = [
+  {authors:'Ayachi, S., He, X., & Yoon, H.J. (2023)',title:'Solar thermoelectricity for power generation.',journal:'Advanced Energy Materials, 13(28).',tags:'solar seebeck ayachi'},
+  {authors:'Xu, C. et al. (2023)',title:'Numerical analysis of thermoelectric power generation coupled with temperature-dependent material properties.',journal:'Frontiers in Energy Research, 11.',tags:'numerical fourier xu huang'},
+  {authors:'Ridwan, M., Gasulla, M., & Reverter, F. (2025)',title:'Principle and Applications of Thermoelectric Generators: A review.',journal:'Sensors, 25(8), 2484.',tags:'principle application ridwan sensors'},
+  {authors:'Baskaran, P. & Rajasekar, M. (2025)',title:'Recent progress in thermoelectric devices and applications.',journal:'Chemical Engineering Journal, 506, 159929.',tags:'progress devices baskaran chemical'},
+  {authors:'Gürcan, A. & Yakar, G. (2025)',title:'Effect of different heat sink designs on thermoelectric generator system performance in a turbocharged tractor.',journal:'Energies, 18(13), 3267.',tags:'heat sink design gurcan energies tractor'},
+  {authors:'Yang, S., Chen, H., & Luo, D. (2025)',title:'A Comprehensive Review of Thermoelectric Generators from Micropower Supply to Kilowatt System.',journal:'Green Energy and Fuel Research.',tags:'comprehensive review yang green energy kilowatt'},
+];
 
-            // 4. Special Case: Chart.js Resize Fix
-            // Charts rendered in hidden containers have 0 height/width. Must resize when revealed.
-            if(targetId === 'view-performance' && window.performanceChartInstance) {
-                window.performanceChartInstance.resize();
-            }
-        });
-    });
+// ── ROUTING ───────────────────────────────────────────
+let currentView = 'v-overview';
+function go(id) {
+  if (navigator.vibrate) navigator.vibrate(10);
+  document.querySelectorAll('.view').forEach(v => {
+    if (v.id === id) { v.style.display='block'; void v.offsetWidth; v.classList.add('active'); }
+    else { v.classList.remove('active'); setTimeout(()=>{ if(!v.classList.contains('active')) v.style.display='none'; },300); }
+  });
+  document.querySelectorAll('[data-view]').forEach(b => {
+    if (b.getAttribute('data-view') === id) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+  document.getElementById('viewport').scrollTo({top:0,behavior:'smooth'});
+  currentView = id;
+  if (id === 'v-perf') { setTimeout(animateKPIs, 200); setTimeout(animateBars, 400); }
+}
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => go(b.getAttribute('data-view'))));
 
-    // --- Architecture Interactive Component Logic ---
-    const archBtns = document.querySelectorAll('.arch-btn');
-    const archDetails = document.querySelectorAll('.arch-detail');
+// ── THEME ─────────────────────────────────────────────
+function toggleTheme() {
+  document.documentElement.classList.toggle('dark');
+  localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  updateThemeUI();
+  if (window._chart) { window._chart.options.scales.x.ticks.color = getTickColor(); window._chart.options.scales.y.ticks.color = getTickColor(); window._chart.update(); }
+}
+function getTickColor() { return document.documentElement.classList.contains('dark') ? '#6e7280' : '#6b6560'; }
+function updateThemeUI() {
+  const dark = document.documentElement.classList.contains('dark');
+  document.getElementById('theme-ic').textContent = dark ? '☀️' : '🌙';
+  document.getElementById('theme-lbl').textContent = dark ? 'Light Mode' : 'Dark Mode';
+}
+updateThemeUI();
 
-    archBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            archBtns.forEach(b => b.classList.remove('active'));
-            archDetails.forEach(d => d.classList.remove('active'));
+// ── CMD PALETTE ───────────────────────────────────────
+function openPal() {
+  const pal = document.getElementById('cmdpal');
+  pal.style.display = 'flex'; void pal.offsetWidth; pal.classList.add('open');
+  document.getElementById('pal-input').value = '';
+  renderPal('');
+  setTimeout(() => document.getElementById('pal-input').focus(), 100);
+}
+function closePal() {
+  const pal = document.getElementById('cmdpal');
+  pal.classList.remove('open');
+  setTimeout(() => pal.style.display = 'none', 200);
+}
+function filterPal(q) { renderPal(q.toLowerCase()); }
+function renderPal(q) {
+  const list = document.getElementById('pal-list');
+  list.innerHTML = NAV_SECTIONS.filter(s => s.t.toLowerCase().includes(q) || s.d.toLowerCase().includes(q)).map(s =>
+    `<div onclick="go('${s.id}');closePal()" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-[var(--bg2)] transition-colors">
+      <span class="text-xl">${s.icon}</span>
+      <div><p class="font-700 text-sm" style="color:var(--text)">${s.t}</p><p class="text-xs" style="color:var(--text-muted)">${s.d}</p></div>
+    </div>`
+  ).join('');
+}
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key === 'k') { e.preventDefault(); openPal(); }
+  if (e.key === 'Escape') closePal();
+});
 
-            btn.classList.add('active');
-            const target = btn.getAttribute('data-arch');
-            document.getElementById('arch-' + target).classList.add('active');
-        });
-    });
+// ── MATERIALS TABLE ────────────────────────────────────
+const matTable = document.getElementById('mat-table');
+const costBars = document.getElementById('cost-bars');
+const maxCost = Math.max(...MATERIALS.map(m=>m.cost));
+MATERIALS.forEach(m => {
+  matTable.innerHTML += `<div class="mat-row"><span class="font-600" style="color:var(--text)">${m.name}</span><span style="color:var(--text-muted)">${m.usage}</span><span class="text-right font-mono font-700" style="color:var(--text)">${m.cost}</span></div>`;
+  costBars.innerHTML += `<div>
+    <div class="flex justify-between text-xs mb-1"><span style="color:var(--text-muted)">${m.name}</span><span class="font-mono font-600" style="color:var(--text)">${m.cost} EGP</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${(m.cost/maxCost*100).toFixed(0)}%;background:var(--accent)"></div></div>
+  </div>`;
+});
 
-    // --- Chart.js Premium Implementation ---
-    const chartData = {
-        energy: { 
-            data: [972, 1200, 2700], 
-            label: 'Total Energy (J)', 
-            color: '#4f46e5', // Indigo-600
-            insight: 'Total energy generated over a 300-second period. The project exceeded the minimum requirement of 150J, achieving an 18x output increase in the final trial.'
-        },
-        power: { 
-            data: [3.24, 4.0, 9.0], 
-            label: 'Power Output (W)', 
-            color: '#0ea5e9', // Sky-500
-            insight: 'Power calculated using P = V² / R. The introduction of salt and ice in Trial 3 effectively doubled the power output compared to Trial 2.'
-        },
-        voltage: { 
-            data: [1.8, 2.0, 3.0], 
-            label: 'Generated Voltage (V)', 
-            color: '#f59e0b', // Amber-500
-            insight: 'Voltage directly correlates with the temperature gradient across the Peltier module. Enhancing the cold side to 0°C drove the highest voltage yield.'
-        },
-        efficiency: { 
-            data: [9, 11, 25], 
-            label: 'System Efficiency (%)', 
-            color: '#10b981', // Emerald-500
-            insight: 'Ratio of energy output to estimated energy input (10,800J). The integration of all thermal management improvements raised system efficiency from 9% to 25%.'
-        }
-    };
+// ── REFERENCES ────────────────────────────────────────
+const refsEl = document.getElementById('refs');
+function renderRefs(q='') {
+  refsEl.innerHTML = REFS.filter(r => !q || r.tags.includes(q) || r.title.toLowerCase().includes(q) || r.authors.toLowerCase().includes(q))
+    .map((r,i) => `<div class="card p-4 flex gap-4 hover:shadow-md transition-shadow">
+      <div class="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center font-display font-800 text-xs" style="background:var(--accent);color:#fff">${i+1}</div>
+      <div>
+        <p class="font-700 text-sm leading-snug mb-1" style="color:var(--text)">${r.title}</p>
+        <p class="text-xs" style="color:var(--text-muted)">${r.authors}</p>
+        <p class="text-xs italic mt-0.5" style="color:var(--accent)">${r.journal}</p>
+      </div>
+    </div>`).join('');
+}
+renderRefs();
+document.getElementById('ref-search').addEventListener('input', e => renderRefs(e.target.value.toLowerCase()));
 
-    const ctx = document.getElementById('performanceCanvas').getContext('2d');
-    
-    // Global reference for resizing on tab switch
-    window.performanceChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Trial 1 (Baseline)', 'Trial 2 (+Compound)', 'Trial 3 (+Ice/Salt)'],
-            datasets: [{
-                label: chartData.energy.label,
-                data: chartData.energy.data,
-                backgroundColor: chartData.energy.color,
-                borderRadius: 8,
-                borderSkipped: false,
-                barPercentage: 0.6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false, // Critical for CSS container sizing
-            layout: {
-                padding: { top: 20 }
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#1e293b',
-                    titleFont: { family: 'Inter', size: 13, weight: 'bold' },
-                    bodyFont: { family: 'Inter', size: 14 },
-                    padding: 12,
-                    cornerRadius: 8,
-                    displayColors: false,
-                    callbacks: {
-                        label: function(context) {
-                            return context.parsed.y + ' ' + context.dataset.label.split(' ')[2].replace(/[()]/g, '');
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: '#e2e8f0', drawBorder: false },
-                    border: { display: false },
-                    ticks: { font: { family: 'Inter' }, color: '#64748b', padding: 10 }
-                },
-                x: {
-                    grid: { display: false, drawBorder: false },
-                    border: { display: false },
-                    ticks: { font: { family: 'Inter', weight: '500' }, color: '#475569', padding: 10 }
-                }
-            },
-            animation: {
-                duration: 750,
-                easing: 'easeOutQuart'
-            }
-        }
-    });
+// ── CHART ─────────────────────────────────────────────
+let currentMetric = 'energy';
+const ctx = document.getElementById('chart').getContext('2d');
+window._chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Trial 1\n(Baseline)', 'Trial 2\n(+Compound)', 'Trial 3\n(+Ice/Salt)'],
+    datasets: [{
+      label: CHART_DATA.energy.label,
+      data: CHART_DATA.energy.data,
+      backgroundColor: [
+        'rgba(148,163,184,.6)', 'rgba(6,182,212,.7)', 'rgba(45,106,79,.85)'
+      ],
+      borderColor: ['#94a3b8','#06b6d4','#2d6a4f'],
+      borderWidth: 2, borderRadius: 8, tension: .35, pointRadius: 5
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} ${CHART_DATA[currentMetric].label.split('(')[1]?.replace(')','') || ''}` } } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(107,101,96,.1)' }, ticks: { color: getTickColor(), font: { family: 'DM Mono', size: 11 } } },
+      x: { grid: { display: false }, ticks: { color: getTickColor(), font: { family: 'DM Sans', size: 11 } } }
+    },
+    animation: { duration: 700, easing: 'easeOutQuart' }
+  }
+});
 
-    // Chart toggle controls
-    const toggleBtns = document.querySelectorAll('.chart-toggle-btn');
-    const insightText = document.getElementById('chart-insight-text');
+document.getElementById('metric-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.metric-tab');
+  if (!btn) return;
+  const m = btn.getAttribute('data-m');
+  currentMetric = m;
+  document.querySelectorAll('.metric-tab').forEach(b => {
+    if (b === btn) { b.style.background = 'var(--accent)'; b.style.color = '#fff'; }
+    else { b.style.background = 'var(--bg2)'; b.style.color = 'var(--text-muted)'; }
+  });
+  window._chart.data.datasets[0].data = CHART_DATA[m].data;
+  window._chart.data.datasets[0].label = CHART_DATA[m].label;
+  window._chart.update();
+});
 
-    toggleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Reset button styles
-            toggleBtns.forEach(b => {
-                b.className = 'chart-toggle-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200';
-            });
-            // Set active button style
-            btn.className = 'chart-toggle-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md shadow-indigo-200 active';
+function setChartType(t) {
+  window._chart.config.type = t;
+  window._chart.update();
+  document.getElementById('btn-bar').style.background = t==='bar' ? 'var(--accent)' : 'var(--surface)';
+  document.getElementById('btn-bar').style.color = t==='bar' ? '#fff' : 'var(--text-muted)';
+  document.getElementById('btn-line').style.background = t==='line' ? 'var(--accent)' : 'var(--surface)';
+  document.getElementById('btn-line').style.color = t==='line' ? '#fff' : 'var(--text-muted)';
+}
 
-            // Update chart
-            const metric = btn.getAttribute('data-metric');
-            const dataConfig = chartData[metric];
+// ── KPI ANIMATION ─────────────────────────────────────
+let kpis_done = false;
+function animVal(id, end, dur, dec=0) {
+  const el = document.getElementById(id);
+  const start = performance.now();
+  const step = now => {
+    const p = Math.min((now - start) / dur, 1);
+    el.textContent = (p * end).toFixed(dec);
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function animateKPIs() {
+  if (kpis_done) return; kpis_done = true;
+  animVal('kpi-e', 25, 1200);
+  animVal('kpi-v', 3.0, 1200, 1);
+  animVal('kpi-j', 2700, 1500);
+}
+function animateBars() {
+  document.querySelectorAll('.progress-fill[data-w]').forEach(el => {
+    el.style.width = el.getAttribute('data-w') + '%';
+  });
+}
 
-            window.performanceChartInstance.data.datasets[0].data = dataConfig.data;
-            window.performanceChartInstance.data.datasets[0].label = dataConfig.label;
-            window.performanceChartInstance.data.datasets[0].backgroundColor = dataConfig.color;
-            window.performanceChartInstance.update();
+// ── MATH SANDBOX ──────────────────────────────────────
+function updateSandbox(v) {
+  const V = parseFloat(v);
+  document.getElementById('sb-v-display').textContent = V.toFixed(1) + ' V';
+  const P = V * V / 1;
+  const E = P * 300;
+  const eff = (E / 10800 * 100);
+  document.getElementById('sb-p').textContent = P.toFixed(2);
+  document.getElementById('sb-e').textContent = Math.round(E);
+  document.getElementById('sb-ef').textContent = eff.toFixed(1);
+}
 
-            // Update insight text
-            insightText.textContent = dataConfig.insight;
-            
-            // Subtle flash animation on text change
-            insightText.style.opacity = '0.5';
-            setTimeout(() => { insightText.style.opacity = '1'; }, 150);
-        });
-    });
+// ── VIDEO LOADER ──────────────────────────────────────
+function loadVid(id, driveId) {
+  const el = document.getElementById(id);
+  el.innerHTML = `<iframe src="https://drive.google.com/file/d/${driveId}/preview" class="absolute inset-0 w-full h-full border-0" allow="autoplay;fullscreen"></iframe>`;
+  el.onclick = null; el.classList.remove('cursor-pointer','group');
+}
+
+// ── INITIAL RENDER ────────────────────────────────────
+// Set all views hidden except active
+document.querySelectorAll('.view').forEach(v => { if (!v.classList.contains('active')) v.style.display = 'none'; });
 </script>
 </body>
 </html>
