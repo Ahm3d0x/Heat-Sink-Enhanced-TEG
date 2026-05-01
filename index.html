@@ -1057,17 +1057,16 @@ function loadVid(containerId, driveId) {
   // The only officially supported format for embedding Drive files
   const embedUrl = `https://drive.google.com/file/d/${driveId}/preview`;
   
-  container.innerHTML = `
-    <iframe 
-      src="${embedUrl}" 
-      width="100%" 
-      height="100%" 
-      class="absolute inset-0 w-full h-full rounded-xl"
-      style="border:none;" 
-      allow="autoplay; fullscreen" 
-      allowfullscreen>
-    </iframe>
-  `;
+container.innerHTML = `
+  <iframe 
+    src="${embedUrl}" 
+    width="100%" 
+    height="100%" 
+    class="absolute inset-0 w-full h-full rounded-xl"
+    style="border:none;" 
+    allow="autoplay; fullscreen">
+  </iframe>
+`;
 }
 
 // ── INITIAL RENDER ────────────────────────────────────
