@@ -1051,10 +1051,23 @@ function updateSandbox(v) {
 }
 
 // ── VIDEO LOADER ──────────────────────────────────────
-function loadVid(id, driveId) {
-  const el = document.getElementById(id);
-  el.innerHTML = `<iframe src="https://drive.google.com/file/d/${driveId}/preview" class="absolute inset-0 w-full h-full border-0" allow="autoplay;fullscreen"></iframe>`;
-  el.onclick = null; el.classList.remove('cursor-pointer','group');
+function loadVid(containerId, driveId) {
+  const container = document.getElementById(containerId);
+  
+  // The only officially supported format for embedding Drive files
+  const embedUrl = `https://drive.google.com/file/d/${driveId}/preview`;
+  
+  container.innerHTML = `
+    <iframe 
+      src="${embedUrl}" 
+      width="100%" 
+      height="100%" 
+      class="absolute inset-0 w-full h-full rounded-xl"
+      style="border:none;" 
+      allow="autoplay; fullscreen" 
+      allowfullscreen>
+    </iframe>
+  `;
 }
 
 // ── INITIAL RENDER ────────────────────────────────────
